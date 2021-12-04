@@ -1,5 +1,3 @@
-package com.bruface.network;
-
 import java.math.BigInteger;
 
 public class DiffieHellman {

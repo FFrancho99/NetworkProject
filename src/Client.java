@@ -6,16 +6,13 @@ import java.net.UnknownHostException;
 public class Client {
 
     public static void main(String[] args) {
-        Socket socket = null;
         int portNumber = 666;
         try {
-            socket = new Socket("localhost", portNumber);
-
+            Socket socket = new Socket("localhost", portNumber);
             ClientThread clientThread = new ClientThread(socket);
 
-
         } catch (IOException e) {
-
+            System.out.println(e.getStackTrace());
         }
 
     }

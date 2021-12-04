@@ -1,4 +1,3 @@
-package com.bruface.network;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -6,18 +5,31 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Server {
-    private ServerSocket server_socket;
-
-    public Server (int port) {
-
+    private static ServerSocket serverSocket;
+    public static void main(String[] args) {
+        int portNumber = 666;
+        serverSocket = null;
         try {
-            server_socket = new ServerSocket(port);
+            ServerSocket serverSocket = new ServerSocket(portNumber);
+            acceptClients();
 
+        } catch (IOException e) {
+            System.out.println("Failed");
 
         }
-        catch(UnknownHostException uhe)
-        {  System.out.println("Host unknown: " + uhe.getMessage()); }
-        catch(IOException ioe)
-        {  System.out.println("Unexpected exception: " + ioe.getMessage()); }
+    }
+
+    private static void acceptClients() {
+        while(true){
+            try{
+                Socket socket = serverSocket.accept();
+                System.out.println("Client accepted");
+                ServerThread serverThread = new ServerThread();
+            }catch(IOException e){
+                System.out.println("Failed");
+
+            }
+
+        }
     }
 }

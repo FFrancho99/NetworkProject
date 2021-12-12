@@ -19,6 +19,7 @@ public class Server {
         }
         try {
             while(true){
+                System.out.println("Waiting for a new client");
                 Socket socket = serverSocket.accept(); //creates a socket for each new client accepted
                 System.out.println("Client accepted");
                 ServerThread serverThread = new ServerThread(socket, clientList); //creates the thread for the new client

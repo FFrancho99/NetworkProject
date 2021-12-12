@@ -15,10 +15,11 @@ public class Server {
             while(true){
                 Socket socket = serverSocket.accept();
                 System.out.println("Client accepted");
-                ServerThread serverThread = new ServerThread(socket, threadArrayList);
+                ServerThread serverThread = new ServerThread(socket);
                 serverThread.start();
                 threadArrayList.add(serverThread);
-                }
+            }
+            //serverSocket.close();
 
         } catch (IOException e) {
             System.out.println(e.getStackTrace());

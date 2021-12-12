@@ -18,26 +18,32 @@ public class Client {
                 /// login
                 System.out.println("Please enter your username");
                 sendToServer(out);// send the userName to the server
-                //create switch case
-
-                System.out.println("Do you want to send a message?");
-                if ((new Scanner(System.in)).nextLine().equals("yes")){
-                    System.out.println("Please enter the recipient name of the message");
-                    sendToServer(out);// send the recipient name to the server
-                    System.out.println("Please enter the message");
-                    sendToServer(out);// send the message to the server
-                    while (true) { //to stay connected, should add a condition
-                        System.out.println("enter new message");
-                        sendToServer(out);
-                        // String response = in.readLine();//reads the server response
-                        //System.out.println(response);
-                    }
-                }else{
-                    System.out.println("Waiting for response");
-                    while (true) { //to stay connected, should add a condition
+                // loop
+                while (true) {
+                System.out.println("Do you want to: 1) send a message 2) check your messages 3) exit");
+                int choice = (new Scanner(System.in)).nextInt();
+                switch (choice){
+                    case 1:
+                        System.out.println("Please enter the recipient name of the message");
+                        sendToServer(out);// send the recipient name to the server
+                        System.out.println("Please enter the message");
+                        sendToServer(out);// send the message to the server
+                        System.out.println("Enter new message");
+                        while (!((new Scanner(System.in)).nextLine().equals("exit"))) {
+                            System.out.println("Enter new message");
+                            sendToServer(out);
+                        }
+                        break;
+                    case 2:
+                        System.out.println("Waiting for response");
                         String response = in.readLine();//reads the server response
                         System.out.println(response);
-                    }
+
+                        break;
+                    case 3:
+                        socket.close();
+                        break;
+                }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

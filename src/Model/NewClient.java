@@ -1,3 +1,4 @@
+/*
 package Model;
 
 import java.io.*;
@@ -98,3 +99,4 @@ public class NewClient {
         }
     }
 }
+*/

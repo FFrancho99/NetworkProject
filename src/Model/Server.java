@@ -11,8 +11,8 @@ public class Server {
     public static void main(String[] args) {
         int portNumber = 666;
         serverSocket = null;
-        ArrayList<ServerThread>  threadArrayList = new ArrayList<>();
-        HashMap<String, Socket> clientList = new HashMap<>(); //HashMap contains the userNames (key) with the corresponding socket (value)
+        ArrayList<ServerThreadNew>  threadArrayList = new ArrayList<>();
+        HashMap<String, Socket[]> clientList = new HashMap<>(); //HashMap contains the userNames (key) with the corresponding socket (value)
         try {
             serverSocket = new ServerSocket(portNumber); //creates the socket of the server
             System.out.println("Model.Server started");
@@ -24,7 +24,7 @@ public class Server {
                 System.out.println("Waiting for a new client");
                 Socket socket = serverSocket.accept(); //creates a socket for each new client accepted
                 System.out.println("Model.Client accepted");
-                ServerThread serverThread = new ServerThread(socket, clientList); //creates the thread for the new client
+                ServerThreadNew serverThread = new ServerThreadNew(socket, clientList); //creates the thread for the new client
                 serverThread.start();
                 threadArrayList.add(serverThread);
             }

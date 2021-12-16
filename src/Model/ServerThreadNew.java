@@ -1,3 +1,4 @@
+/*
 package Model;
 
 import java.io.*;
@@ -6,9 +7,11 @@ import java.util.HashMap;
 
 public class ServerThreadNew extends Thread{
     private Socket socketSender;
-    private HashMap<String, Socket> clientList;
+    private HashMap<String,Socket[]> clientList;
+    private String sender;
+    private Socket socketOfRecipient;
 
-    public ServerThreadNew(Socket socket, HashMap<String,Socket> clientList){
+    public ServerThreadNew(Socket socket, HashMap<String,Socket[]> clientList){
         this.socketSender = socket;
         this.clientList = clientList;
     }
@@ -18,25 +21,37 @@ public class ServerThreadNew extends Thread{
             //done once
             InputStream input = socketSender.getInputStream(); //to read data (at low level, bytes) sent from the client
             BufferedReader reader = new BufferedReader(new InputStreamReader(input)); //wrap the InputStream in a BufferedReader to read data as String
-            String data = reader.readLine(); //reads the userName sent by the client
-            
+            while(true){
+                String data = reader.readLine(); //reads the userName sent by the client
+                String header = String.valueOf(data.charAt(0));
+                String dataContent = data.substring(1);
 
-            System.out.println("name of the client: " + userName);
-            clientList.put(userName, socketSender);//adds the userName and the corresponding socket to the clientList
-            String recipient = reader.readLine();// reads the recipient name sent by the client
-            if(clientList.containsKey(recipient)) { //if client connected
-                Socket socketRecipient = clientList.get(recipient);
-                String message = reader.readLine();
-                sendToClient(socketRecipient,message);
-                while (true) {//to stay connected, should add a condition
-                    String data = reader.readLine();
-                    System.out.println(data);
-                    sendToClient(socketRecipient,data);
-                }
+            switch (header){
+                case "1": //login
+                    System.out.println("name of the client: " + dataContent);
+                    sender = dataContent;
+                    clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
 
-            } else{
-                sendToClient(socketSender, "The recipient is not connected" );
+                    break;
+                case "2"://to
+                    Socket[] socketRecipient = clientList.get(dataContent);
+                    socketOfRecipient = socketRecipient[1];
+                    clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
+                    break;
+                case "3"://send
+                    sendToClient(socketOfRecipient, dataContent);
+
+                    break;
+
+                case "4":
+                    break;
+
             }
+
+
+            }
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,3 +71,4 @@ public class ServerThreadNew extends Thread{
     }
 
 }
+*/

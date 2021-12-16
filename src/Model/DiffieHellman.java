@@ -1,8 +1,10 @@
-import javax.crypto.interfaces.*;
+package Model;
+
 import java.math.BigInteger;
 
 public class DiffieHellman {
     BigInteger p,g;
+
     public DiffieHellman(BigInteger p, BigInteger g){
         this.p = p;
         this.g = g;

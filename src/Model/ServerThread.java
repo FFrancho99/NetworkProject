@@ -39,6 +39,12 @@ public class ServerThread extends Thread{
 
             System.out.println(key);
 
+            String encryptedMessage = reader.readLine();
+            String descryptedString = AES.decrypt(encryptedMessage, String.valueOf(key));
+
+            System.out.println(encryptedMessage);
+            System.out.println(descryptedString);
+
             String userName = reader.readLine(); //reads the userName sent by the client
             System.out.println("name of the client: " + userName);
             clientList.put(userName, socketSender);//adds the userName and the corresponding socket to the clientList

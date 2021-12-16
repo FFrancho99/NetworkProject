@@ -18,8 +18,14 @@ public class NewClient {
                 // loop
                 while (true) {
                     listenToServer(in);
-                    String command = readConsole();
-                    sendToServer();
+                    String[] commandAndArgumentsArray = readConsole(out);
+                    if (commandAndArgumentsArray.length != 0) { //check if stg has been written
+                        readCommand(out, commandAndArgumentsArray);
+                    }
+
+
+
+
                     // listenners should call sendToServer
 
 
@@ -47,13 +53,48 @@ public class NewClient {
     }
 
     public static void sendToServer(PrintWriter out, int header, String message){
-        String messageToSend = header + message.nextLine();
+        String messageToSend = header + message;
         out.println(messageToSend);
     }
 
-    public static String readConsole(){
-        Scanner command = new Scanner(System.in);
-        String commandUser = command.nextLine();
-        return commandUser;
+    public static String[] readConsole(PrintWriter out){
+        Scanner commandScan = new Scanner(System.in);
+        String commandAndArguments = commandScan.nextLine();
+        String[] commandAndArgumentsArray = commandAndArguments.split(":");
+        return commandAndArgumentsArray;
+    }
+    private static void readCommand(PrintWriter out, String[] commandAndArgumentsArray){
+        String command = commandAndArgumentsArray[0].trim(); //trim to remove spaces at start and end of string
+        switch (command){
+            case "help":
+                System.out.println("Got confused with the chat app? Bob is here to help you.\n" +
+                        "if you need help, type 'help'" +
+                        "if you want to do something, type the command followed by ':' " +
+                        "followed by the command arguments if there are any" +
+                        "---------------------------------------------------------------------\n" +
+                        "COMMAND: + arguments\n" +
+                        "---------------------------------------------------------------------\n" +
+                        "'help'\n" +
+                        "--------------- if you need help\n" +
+                        "'to: + username of your recipient' \n" +
+                        "--------------- to start a conversation with 'username'\n" +
+                        "send: + msg\n" +
+                        "--------------- to send 'msg' to your recipient\n" +
+                        "logout \n" +
+                        "--------------- to disconnect\n" +
+                        "login \n" +
+                        "---------------- to login \n" +
+                        "signup \n" +
+                        "---------------- to sign up\n");
+            case "to":
+                sendToServer(out, 2, commandAndArgumentsArray[1]);
+            case "send":
+                sendToServer(out, 3, commandAndArgumentsArray[1]);
+            case "logout":
+
+            case "login":
+                //TODO add fucntion which asks for username and password calls readconsole to read user inputs
+            case "signup":
+        }
     }
 }

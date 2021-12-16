@@ -51,18 +51,26 @@ public class Client {
                         case 1:
                             System.out.println("Please enter the recipient name of the message");
                             sendToServer(out);// send the recipient name to the server
-                            System.out.println("Please enter the message");
-                            sendToServer(out);// send the message to the server
-                            System.out.println("Enter new message");
+                            String response = in.readLine();//reads the server response
+                            System.out.println(response);
+                            if (response.equals("The recipient is not connected")){
+                                break;
+                            }else{
+                                System.out.println("Please enter the message");
+                                sendToServer(out);// send the message to the server
+                                System.out.println("Enter new message");
+                            }
                             while (!((new Scanner(System.in)).nextLine().equals("exit"))) {
                                 System.out.println("Enter new message");
                                 sendToServer(out);
+                                String responses = in.readLine();//reads the server response
+                                System.out.println(responses);
                             }
                             break;
                         case 2:
-                            System.out.println("Waiting for response");
-                            String response = in.readLine();//reads the server response
-                            System.out.println(response);
+                            System.out.println("Waiting for messages");
+                            String resp = in.readLine();//reads the server response
+                            System.out.println(resp);
 
                             break;
                         case 3:

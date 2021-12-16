@@ -1,15 +1,22 @@
 package Model;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Client {
 
     public static void main(String[] args) {
         int portNumber = 666;
+        // Diffie Hellman values for key exchange
+        BigInteger p = new BigInteger("23");
+        BigInteger g = new BigInteger("5");
+        DiffieHellman DH = new DiffieHellman(p,g);
+
         try {
             Socket socket = new Socket("localhost", portNumber);
             OutputStream output = null;
@@ -17,6 +24,22 @@ public class Client {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
                 PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
+
+                // Diffie-Hellman key sharing
+                out.println(DH.getP()); // Send p to the server
+                out.println(DH.getG()); // Send g to the server
+
+                Random rand = new Random();
+                int int_random = rand.nextInt(30); // Create a random secret number
+                BigInteger b = new BigInteger(String.valueOf(int_random)); // Switch type from int to string to BigInt
+
+                out.println(String.valueOf(DH.determineMessage(b))); // Send number to server based on the secret number
+
+                String message = in.readLine(); // Receive the number based on the secret number a of Server
+                BigInteger m = new BigInteger(String.valueOf(message)); // Switch type from int to string to BigInt
+                BigInteger key = DH.determineKey(m, b); // Determine the common key between the Server and Client
+
+                System.out.println(key);
                 /// login
                 System.out.println("Please enter your username");
                 sendToServer(out);// send the userName to the server

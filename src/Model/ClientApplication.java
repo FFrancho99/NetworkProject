@@ -19,7 +19,6 @@ public class ClientApplication {
 
     }
 
-
     public void sendToServer(PrintWriter out, int header, String message){
         String messageToSend = header + message;
         out.println(messageToSend);
@@ -28,9 +27,9 @@ public class ClientApplication {
     public String[] readConsole(PrintWriter out){
         Scanner commandScan = new Scanner(System.in);
         String commandAndArguments = commandScan.nextLine();
-        String[] commandAndArgumentsArray = commandAndArguments.split(":");
-        return commandAndArgumentsArray;
+        return commandAndArguments.split(":");
     }
+
     private void readCommand(PrintWriter out, String[] commandAndArgumentsArray){
         String command = commandAndArgumentsArray[0].trim(); //trim to remove spaces at start and end of string
         switch (command){
@@ -99,6 +98,4 @@ public class ClientApplication {
             }
         }
     }
-
-
 }

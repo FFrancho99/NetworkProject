@@ -4,7 +4,12 @@ package Model;
 import java.io.*;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Random;
+import java.util.Scanner;
 
 public class ServerThreadNew extends Thread{
     private Socket socketSender;
@@ -27,6 +32,8 @@ public class ServerThreadNew extends Thread{
                 String data = reader.readLine(); //reads the userName sent by the client
                 String header = String.valueOf(data.charAt(0));
                 String dataContent = data.substring(1);
+
+
 
             switch (header){
                 case "1": //login
@@ -56,7 +63,13 @@ public class ServerThreadNew extends Thread{
                     break;
 
                 case "4":
+                    soloMode(socketSender);
+
                     break;
+                case "5":
+
+                    break;
+
 
             }
 
@@ -81,5 +94,23 @@ public class ServerThreadNew extends Thread{
             e.printStackTrace();
         }
     }
+
+    private void soloMode(Socket socket) throws IOException {
+        File listOfJokes = new File("src/Model/jokeDatabase");
+        String joke = null;
+        Random rand = new Random();
+        int n = 0;
+        Scanner scanner = new Scanner(listOfJokes);
+        while (scanner.hasNext()) {
+            ++n;
+            String line = scanner.nextLine();
+            if (rand.nextInt(n) == 0)
+                joke = line;
+        }
+        scanner.close();
+        sendToClient(socket, joke);
+
+    }
+
 
 }

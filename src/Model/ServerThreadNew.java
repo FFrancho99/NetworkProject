@@ -30,18 +30,15 @@ public class ServerThreadNew extends Thread{
 
             switch (header){
                 case "1": //login
-                    System.out.println("name of the client: " + dataContent);
                     sender = dataContent;
                     String[] newSender = dataContent.split(":");
                     ClientLogin clientLogin = new ClientLogin(newSender[0], newSender[1]);
                     if(clientLogin.checkLogin()){
                         clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
-                        sendToClient(socketSender, "Login successful", true);
-                        System.out.println("if");
+                        sendToClient(socketSender, "Login successful");
                     }
                     else{
-                        sendToClient(socketSender, "False", false);
-                        System.out.println("else");
+                        sendToClient(socketSender, "False");
                     }
                     break;
                 case "2"://to
@@ -50,10 +47,10 @@ public class ServerThreadNew extends Thread{
                     Socket[] socketRecipient = clientList.get(recipient);
                     socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
-                    sendToClient(socketSender, "you can now send a message", true);
+                    sendToClient(socketSender, "you can now send a message");
                     break;
                 case "3"://send
-                    sendToClient(socketOfRecipient, dataContent, true);
+                    sendToClient(socketOfRecipient, dataContent);
                     System.out.println("send message");
                     break;
 
@@ -72,14 +69,12 @@ public class ServerThreadNew extends Thread{
         }
 
     }
-    public void sendToClient(Socket socket, String message, Boolean bool){
+    public void sendToClient(Socket socket, String message){
         OutputStream output = null;//to send the data to the client (low level)
         try {
             output = socket.getOutputStream();
             PrintWriter writer = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
-            if(bool){
-                writer.println(message);
-            }
+            writer.println(message);
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();

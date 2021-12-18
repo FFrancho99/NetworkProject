@@ -6,26 +6,32 @@ import java.io.IOException;
 public class ClientApplicationThread extends Thread {
 
     private final BufferedReader in;
+    private final ClientApplication clientApplication;
+    private String data;
 
-    public  ClientApplicationThread(BufferedReader in){
+    public  ClientApplicationThread(BufferedReader in, ClientApplication clientApplication){
         this.in = in;
-
+        this.clientApplication = clientApplication;
     }
     @Override
     public void run() {
         System.out.println("in run");
-        listenToServer(in);
-
+        while(true){
+            listenToServer(in);
+        }
     }
     private void listenToServer(BufferedReader in) {
-        String resp = null;//reads the server response
+        String resp; //reads the server response
         try {
             resp = in.readLine();
-            System.out.println(resp);
+            setData(resp);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+    }
+    public void setData(String data){
+        this.data = data;
+        clientApplication.update(this.data);
     }
 }
 

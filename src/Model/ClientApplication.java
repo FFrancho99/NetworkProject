@@ -1,18 +1,68 @@
 package Model;
 
+import java.awt.image.ImageObserver;
 import java.io.*;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class ClientApplication {
+public class ClientApplication implements ClientObserver {
+    private BufferedReader in;
+    private String mess;
+    private Boolean maj = false;
     private Socket socket;
 
-    public ClientApplication(){
+    public ClientApplication() {
         try{
             int portNumber = 666;
-            socket = new Socket("localhost", portNumber);
-            launch();
+            Socket socket = new Socket("localhost", portNumber);
+            OutputStream output;
+            try {
+                output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
+                PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
+                ClientApplicationThread threadListen = new ClientApplicationThread(in, this);
+                threadListen.start();
+
+                // loop
+                System.out.println("Do you want to login or signup?");
+                Scanner scanner = new Scanner(System.in);
+                switch (scanner.nextLine()){
+                    case "login": {
+                        ClientLogin cl = new ClientLogin();
+                        cl.setLogin();
+                        cl.setPassword();
+                        String data = cl.getLogin() + ":" + cl.getPassword();
+                        sendToServer(out, 1, data);
+                        while(!maj){
+                        }
+                        while(mess.equals("False")){
+                            this.maj = false;
+                            System.out.println("Wrong login or password");
+                            cl.setLogin();
+                            cl.setPassword();
+                            data = cl.getLogin() + ":" + cl.getPassword();
+                            sendToServer(out, 1, data);
+                            while(!maj){
+                            }
+                        }
+                    }
+                    case "signup":{
+                        // TODO: 18/12/2021
+                    }
+                }
+                while (true) {
+                    String[] commandAndArgumentsArray = readConsole(out);
+                    if (commandAndArgumentsArray.length != 0) { //check if stg has been written
+                        readCommand(out, commandAndArgumentsArray);
+                    }
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
         System.out.println(Arrays.toString(e.getStackTrace()));
         }
@@ -75,27 +125,49 @@ public class ClientApplication {
             case "logout":
 
                 break;
-            case "login":
-                sendToServer(out, 1, commandAndArgumentsArray[1]);
-                //TODO add fucntion which asks for username and password calls readconsole to read user inputs
-                break;
-            case "signup":
-                break;
         }
     }
 
-    public void launch() throws IOException {
-        OutputStream output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
-        PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
-        ClientApplicationThread threadListen = new ClientApplicationThread(in);
-        threadListen.start();
+    public void launch(PrintWriter out) throws InterruptedException {
         // loop
+        System.out.println("Do you want to login or signup?");
+        Scanner scanner = new Scanner(System.in);
+        switch (scanner.nextLine()){
+            case "login": {
+                login(out);
+            }
+            case "signup":{
+                // TODO: 18/12/2021
+            }
+        }
         while (true) {
             String[] commandAndArgumentsArray = readConsole(out);
             if (commandAndArgumentsArray.length != 0) { //check if stg has been written
                 readCommand(out, commandAndArgumentsArray);
             }
         }
+
+    }
+
+    public void login(PrintWriter out) throws InterruptedException {
+        ClientLogin cl = new ClientLogin();
+        cl.setLogin();
+        cl.setPassword();
+        String data = cl.getLogin() + ":" + cl.getPassword();
+        sendToServer(out, 1, data);
+        System.out.println("sent to server");
+        while(mess.equals("False")){
+            System.out.println("Wrong login or password");
+            cl.setLogin();
+            cl.setPassword();
+            data = cl.getLogin() + ":" + cl.getPassword();
+            sendToServer(out, 1, data);
+        }
+    }
+
+    @Override
+    public void update(String s) {
+        this.mess = s;
+        this.maj = true;
     }
 }

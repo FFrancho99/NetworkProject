@@ -3,6 +3,7 @@ package Model;
 
 import java.io.*;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 public class ServerThreadNew extends Thread{
@@ -29,10 +30,17 @@ public class ServerThreadNew extends Thread{
 
             switch (header){
                 case "1": //login
-                    System.out.println("name of the client: " + dataContent);
                     sender = dataContent;
-                    clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
-
+                    String[] newSender = dataContent.split(":");
+                    ClientLogin clientLogin = new ClientLogin(newSender[0], newSender[1]);
+                    if(clientLogin.checkLogin()){
+                        clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
+                        sendToClient(socketSender, "Login successful");
+                    }
+                    else{
+                        System.out.println("login failed");
+                        sendToClient(socketSender, "False");
+                    }
                     break;
                 case "2"://to
                     System.out.println("name of the recipient: " + dataContent);
@@ -57,12 +65,12 @@ public class ServerThreadNew extends Thread{
 
 
 
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
     }
-    public void sendToClient(Socket socket, String message ){
+    public void sendToClient(Socket socket, String message){
         OutputStream output = null;//to send the data to the client (low level)
         try {
             output = socket.getOutputStream();

@@ -27,6 +27,8 @@ public class ServerThreadNew extends Thread{
                 String header = String.valueOf(data.charAt(0));
                 String dataContent = data.substring(1);
 
+
+
             switch (header){
                 case "1": //login
                     System.out.println("name of the client: " + dataContent);

@@ -2,34 +2,15 @@ package Model;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
-public class AccountCreator {
-
-    public static void CreateAccount() throws NoSuchAlgorithmException, IOException {
+public class ClientLogin {
+    public static boolean userLogin() throws NoSuchAlgorithmException, IOException{
         BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
-        FileWriter fileWriter = new FileWriter("database.txt");
-
         String login = login();
-        String DBLine = reader.readLine();
-
-        while( DBLine != null){
-            String[] arrayOfData = DBLine.split(":");
-            if (login.equals(arrayOfData[1])){
-                System.out.println("This login is already taken");
-                login = login();
-                reader.close();
-                reader = new BufferedReader(new FileReader("database.txt"));
-            }
-            DBLine = reader.readLine();
-        }
-        fileWriter.write(login + " : ");
-
         String password = password();
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -39,8 +20,23 @@ public class AccountCreator {
         for (byte b : digest) {
             hexString.append(Integer.toHexString(0xFF & b));
         }
-        fileWriter.write(hexString.toString());
-        fileWriter.close();
+
+        String hashedPassword = hexString.toString();
+
+        String DBLine = reader.readLine();
+        while(DBLine != null){
+            String[] arrayOfData = DBLine.split(":");
+            if(login.equals(arrayOfData[0])){
+                if(hashedPassword.equals(arrayOfData[1])){
+                    return true;
+                }
+                System.out.println("Wrong password for this username");
+                return false;
+            }
+            DBLine = reader.readLine();
+        }
+        System.out.println("This username doesnt exist");
+        return false;
     }
 
     public static String login(){

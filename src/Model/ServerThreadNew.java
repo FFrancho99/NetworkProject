@@ -38,6 +38,7 @@ public class ServerThreadNew extends Thread{
                         sendToClient(socketSender, "Login successful");
                     }
                     else{
+                        System.out.println("login failed");
                         sendToClient(socketSender, "False");
                     }
                     break;

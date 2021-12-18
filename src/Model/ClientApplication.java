@@ -34,15 +34,17 @@ public class ClientApplication implements ClientObserver {
                         cl.setPassword();
                         String data = cl.getLogin() + ":" + cl.getPassword();
                         sendToServer(out, 1, data);
-                        System.out.println("sent to server");
-                        while(!maj){ }
+                        while(!maj){
+                        }
                         while(mess.equals("False")){
+                            this.maj = false;
                             System.out.println("Wrong login or password");
                             cl.setLogin();
                             cl.setPassword();
                             data = cl.getLogin() + ":" + cl.getPassword();
                             sendToServer(out, 1, data);
-                            this.maj = false;
+                            while(!maj){
+                            }
                         }
                     }
                     case "signup":{
@@ -116,8 +118,6 @@ public class ClientApplication implements ClientObserver {
                 break;
             case "logout":
 
-                break;
-            case "signup":
                 break;
         }
     }

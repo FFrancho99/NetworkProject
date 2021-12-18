@@ -16,7 +16,9 @@ public class ClientApplicationThread extends Thread {
     @Override
     public void run() {
         System.out.println("in run");
-        listenToServer(in);
+        while(true){
+            listenToServer(in);
+        }
     }
     private void listenToServer(BufferedReader in) {
         String resp; //reads the server response

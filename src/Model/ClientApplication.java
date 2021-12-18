@@ -4,7 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientApplication {
+public class ClientApplication implements Runnable {
+    private BufferedReader in;
 
     public ClientApplication(){
         try{
@@ -14,10 +15,11 @@ public class ClientApplication {
             try {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
                 PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
+                Thread threadListen = new Thread();
+                threadListen.start();
                 // loop
                 while (true) {
-                    //listenToServer(in);
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written
                         readCommand(out, commandAndArgumentsArray);
@@ -32,7 +34,7 @@ public class ClientApplication {
         }
 
     }
-    private static void listenToServer(BufferedReader in) {
+    private void listenToServer(BufferedReader in) {
         String resp = null;//reads the server response
         try {
             resp = in.readLine();
@@ -43,18 +45,18 @@ public class ClientApplication {
         System.out.println(resp);
     }
 
-    public static void sendToServer(PrintWriter out, int header, String message){
+    public void sendToServer(PrintWriter out, int header, String message){
         String messageToSend = header + message;
         out.println(messageToSend);
     }
 
-    public static String[] readConsole(PrintWriter out){
+    public String[] readConsole(PrintWriter out){
         Scanner commandScan = new Scanner(System.in);
         String commandAndArguments = commandScan.nextLine();
         String[] commandAndArgumentsArray = commandAndArguments.split(":");
         return commandAndArgumentsArray;
     }
-    private static void readCommand(PrintWriter out, String[] commandAndArgumentsArray){
+    private void readCommand(PrintWriter out, String[] commandAndArgumentsArray){
         String command = commandAndArgumentsArray[0].trim(); //trim to remove spaces at start and end of string
         switch (command){
             case "help":
@@ -101,5 +103,9 @@ public class ClientApplication {
                 break;
             case "signup":
                 break;
-        }}
+        }
+    }
+    public void run() {
+        listenToServer(in);
+    }
 }

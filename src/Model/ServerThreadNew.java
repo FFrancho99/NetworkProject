@@ -88,7 +88,21 @@ public class ServerThreadNew extends Thread{
     }
 
     private void soloMode(Socket socket) throws IOException {
-        String fileName = "jokeDatabase.txt";
+        File f = new File("src/Model/jokeDatabase");
+        String result = null;
+        Random rand = new Random();
+        int n = 0;
+        Scanner sc = new Scanner(f);
+        while (sc.hasNext()) {
+            ++n;
+            String line = sc.nextLine();
+            if (rand.nextInt(n) == 0)
+                result = line;
+        }
+        sc.close();
+        sendToClient(socket, result);
+
+       /* String fileName = "C:\\Users\\Flo\\IdeaProjects\\NetworkProject\\src\\Model\\jokeDatabase.txt";
         long numberOfLines = countLineNo(fileName);
         Random rand = new Random();
         int lineNumber = rand.nextInt((int) numberOfLines);
@@ -98,7 +112,7 @@ public class ServerThreadNew extends Thread{
         }
         catch(IOException e){
             System.out.println(e);
-        }
+        }*/
 
     }
 

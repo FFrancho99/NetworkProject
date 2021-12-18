@@ -7,8 +7,9 @@ public class ClientApplicationThread extends Thread {
 
     private final BufferedReader in;
     private final ClientApplication clientApplication;
+    private String data;
 
-    public ClientApplicationThread(BufferedReader in, ClientApplication clientApplication){
+    public  ClientApplicationThread(BufferedReader in, ClientApplication clientApplication){
         this.in = in;
         this.clientApplication = clientApplication;
     }
@@ -18,14 +19,17 @@ public class ClientApplicationThread extends Thread {
         listenToServer(in);
     }
     private void listenToServer(BufferedReader in) {
-        String resp;//reads the server response
+        String resp; //reads the server response
         try {
             resp = in.readLine();
-            clientApplication.setData(resp);
-            System.out.println("dataset");
+            setData(resp);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+    }
+    public void setData(String data){
+        this.data = data;
+        clientApplication.update(this.data);
     }
 }
+

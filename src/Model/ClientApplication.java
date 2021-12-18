@@ -1,20 +1,22 @@
 package Model;
 
+import java.awt.image.ImageObserver;
 import java.io.*;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class ClientApplication {
+public class ClientApplication implements ClientObserver {
     private BufferedReader in;
     private String mess;
+    private Boolean maj = false;
 
-    public ClientApplication() throws IOException, NoSuchAlgorithmException {
+    public ClientApplication() {
         try{
             int portNumber = 666;
             Socket socket = new Socket("localhost", portNumber);
-            OutputStream output = null;
+            OutputStream output;
             try {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
                 PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
@@ -33,12 +35,14 @@ public class ClientApplication {
                         String data = cl.getLogin() + ":" + cl.getPassword();
                         sendToServer(out, 1, data);
                         System.out.println("sent to server");
+                        while(!maj){ }
                         while(mess.equals("False")){
                             System.out.println("Wrong login or password");
                             cl.setLogin();
                             cl.setPassword();
                             data = cl.getLogin() + ":" + cl.getPassword();
                             sendToServer(out, 1, data);
+                            this.maj = false;
                         }
                     }
                     case "signup":{
@@ -117,9 +121,6 @@ public class ClientApplication {
                 break;
         }
     }
-    public void setData(String data){
-        this.mess = data;
-    }
 
     public void launch(PrintWriter out) throws InterruptedException {
         // loop
@@ -156,5 +157,11 @@ public class ClientApplication {
             data = cl.getLogin() + ":" + cl.getPassword();
             sendToServer(out, 1, data);
         }
+    }
+
+    @Override
+    public void update(String s) {
+        this.mess = s;
+        this.maj = true;
     }
 }

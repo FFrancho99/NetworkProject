@@ -32,7 +32,7 @@ public class ClientApplication {
         }
 
     }
-    private static void listenToServer(BufferedReader in) {
+    private void listenToServer(BufferedReader in) {
         String resp = null;//reads the server response
         try {
             resp = in.readLine();
@@ -43,18 +43,18 @@ public class ClientApplication {
         System.out.println(resp);
     }
 
-    public static void sendToServer(PrintWriter out, int header, String message){
+    public void sendToServer(PrintWriter out, int header, String message){
         String messageToSend = header + message;
         out.println(messageToSend);
     }
 
-    public static String[] readConsole(PrintWriter out){
+    public String[] readConsole(PrintWriter out){
         Scanner commandScan = new Scanner(System.in);
         String commandAndArguments = commandScan.nextLine();
         String[] commandAndArgumentsArray = commandAndArguments.split(":");
         return commandAndArgumentsArray;
     }
-    private static void readCommand(PrintWriter out, String[] commandAndArgumentsArray){
+    private void readCommand(PrintWriter out, String[] commandAndArgumentsArray){
         String command = commandAndArgumentsArray[0].trim(); //trim to remove spaces at start and end of string
         switch (command){
             case "help":

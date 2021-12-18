@@ -9,6 +9,7 @@ public class ServerThreadNew extends Thread{
     private Socket socketSender;
     private HashMap<String,Socket[]> clientList;
     private String sender;
+    private String recipient;
     private Socket socketOfRecipient;
 
     public ServerThreadNew(Socket socket, HashMap<String,Socket[]> clientList){
@@ -34,13 +35,16 @@ public class ServerThreadNew extends Thread{
 
                     break;
                 case "2"://to
-                    Socket[] socketRecipient = clientList.get(dataContent);
-                    socketOfRecipient = socketRecipient[1];
+                    System.out.println("name of the recipient: " + dataContent);
+                    recipient = dataContent;
+                    Socket[] socketRecipient = clientList.get(recipient);
+                    socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
+                    sendToClient(socketSender, "you can now send a message");
                     break;
                 case "3"://send
                     sendToClient(socketOfRecipient, dataContent);
-
+                    System.out.println("send message");
                     break;
 
                 case "4":

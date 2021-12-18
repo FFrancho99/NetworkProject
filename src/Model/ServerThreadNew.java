@@ -1,4 +1,4 @@
-/*
+
 package Model;
 
 import java.io.*;
@@ -71,4 +71,3 @@ public class ServerThreadNew extends Thread{
     }
 
 }
-*/

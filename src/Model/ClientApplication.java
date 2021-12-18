@@ -96,6 +96,9 @@ public class ClientApplication {
                 break;
             case "signup":
                 break;
+            case "imaginary friend":
+                sendToServer(out, 4, null);
+                break;
         }
     }
 

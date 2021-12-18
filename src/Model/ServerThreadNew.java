@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Scanner;
 
 public class ServerThreadNew extends Thread{
     private Socket socketSender;
@@ -54,7 +55,13 @@ public class ServerThreadNew extends Thread{
                     break;
 
                 case "4":
+                    soloMode(socketSender);
+
                     break;
+                case "5":
+
+                    break;
+
 
             }
 

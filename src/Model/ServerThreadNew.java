@@ -3,7 +3,11 @@ package Model;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Random;
 
 public class ServerThreadNew extends Thread{
     private Socket socketSender;
@@ -76,4 +80,30 @@ public class ServerThreadNew extends Thread{
         }
     }
 
+    private void soloMode(Socket socket) throws IOException {
+        String fileName = "jokeDatabase.txt";
+        long numberOfLines = countLineNo(fileName);
+        Random rand = new Random();
+        int lineNumber = rand.nextInt((int) numberOfLines);
+        try{
+            String joke = Files.readAllLines(Paths.get(fileName)).get(lineNumber);
+            sendToClient(socket, joke);
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
+
+    }
+
+    public static long countLineNo(String fileName) {
+        Path path = Paths.get(fileName);
+        long numberOfLines = 0;
+        try {
+            numberOfLines = Files.lines(path).count();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return numberOfLines;
+
+    }
 }

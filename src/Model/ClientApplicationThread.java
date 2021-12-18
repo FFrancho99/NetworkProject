@@ -17,7 +17,7 @@ public class ClientApplicationThread extends Thread {
         System.out.println("in run");
         listenToServer(in);
     }
-    private synchronized void listenToServer(BufferedReader in) {
+    private void listenToServer(BufferedReader in) {
         String resp;//reads the server response
         try {
             resp = in.readLine();

@@ -3,6 +3,7 @@ package Model;
 
 import java.io.*;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 public class ServerThreadNew extends Thread{
@@ -31,8 +32,17 @@ public class ServerThreadNew extends Thread{
                 case "1": //login
                     System.out.println("name of the client: " + dataContent);
                     sender = dataContent;
-                    clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
-
+                    String[] newSender = dataContent.split(":");
+                    ClientLogin clientLogin = new ClientLogin(newSender[0], newSender[1]);
+                    if(clientLogin.checkLogin()){
+                        clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
+                        sendToClient(socketSender, "Login successful", true);
+                        System.out.println("if");
+                    }
+                    else{
+                        sendToClient(socketSender, "False", false);
+                        System.out.println("else");
+                    }
                     break;
                 case "2"://to
                     System.out.println("name of the recipient: " + dataContent);
@@ -40,10 +50,10 @@ public class ServerThreadNew extends Thread{
                     Socket[] socketRecipient = clientList.get(recipient);
                     socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
-                    sendToClient(socketSender, "you can now send a message");
+                    sendToClient(socketSender, "you can now send a message", true);
                     break;
                 case "3"://send
-                    sendToClient(socketOfRecipient, dataContent);
+                    sendToClient(socketOfRecipient, dataContent, true);
                     System.out.println("send message");
                     break;
 
@@ -57,17 +67,19 @@ public class ServerThreadNew extends Thread{
 
 
 
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
     }
-    public void sendToClient(Socket socket, String message ){
+    public void sendToClient(Socket socket, String message, Boolean bool){
         OutputStream output = null;//to send the data to the client (low level)
         try {
             output = socket.getOutputStream();
             PrintWriter writer = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
-            writer.println(message);
+            if(bool){
+                writer.println(message);
+            }
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();

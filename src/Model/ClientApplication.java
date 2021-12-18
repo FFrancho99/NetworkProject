@@ -2,12 +2,13 @@ package Model;
 
 import java.io.*;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class ClientApplication implements Runnable {
     private BufferedReader in;
 
-    public ClientApplication(){
+    public ClientApplication() throws IOException, NoSuchAlgorithmException {
         try{
             int portNumber = 666;
             Socket socket = new Socket("localhost", portNumber);
@@ -16,10 +17,34 @@ public class ClientApplication implements Runnable {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
                 PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
-                Thread threadListen = new Thread();
+                ClientApplicationThread threadListen = new ClientApplicationThread(in);
                 threadListen.start();
                 //threadListen.run();
                 // loop
+                ClientLogin cl = new ClientLogin();
+                System.out.println("Do you want to login or signup?");
+                Scanner scanner = new Scanner(System.in);
+                switch (scanner.nextLine()){
+                    case "login": {
+                        cl.setLogin();
+                        cl.setPassword();
+                        String data = cl.getLogin() + ":" + cl.getPassword();
+                        sendToServer(out, 1, data);
+                        System.out.println(in.readLine());
+                        /*while(in.readLine().equals("False")){
+                            System.out.println("Wrong login or password");
+                            cl.setLogin();
+                            cl.setPassword();
+                            data = cl.getLogin() + ":" + cl.getPassword();
+                            sendToServer(out, 1, data);
+                            System.out.println("boucle");
+                        }*/
+                        System.out.println("LOGIN SUCCESSFUL");
+                    }
+                    case "signup":{
+                        // TODO: 18/12/2021
+                    }
+                }
                 while (true) {
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written
@@ -98,10 +123,6 @@ public class ClientApplication implements Runnable {
                 break;
             case "logout":
 
-                break;
-            case "login":
-                sendToServer(out, 1, commandAndArgumentsArray[1]);
-                //TODO add fucntion which asks for username and password calls readconsole to read user inputs
                 break;
             case "signup":
                 break;

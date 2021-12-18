@@ -2,36 +2,19 @@ package Model;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class ClientApplication {
-    private BufferedReader in;
+    private Socket socket;
 
     public ClientApplication(){
         try{
             int portNumber = 666;
-            Socket socket = new Socket("localhost", portNumber);
-            OutputStream output = null;
-            try {
-                output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
-                PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
-                ClientApplicationThread threadListen = new ClientApplicationThread(in);
-                threadListen.start();
-                //threadListen.run();
-                // loop
-                while (true) {
-                    String[] commandAndArgumentsArray = readConsole(out);
-                    if (commandAndArgumentsArray.length != 0) { //check if stg has been written
-                        readCommand(out, commandAndArgumentsArray);
-                    }
-                }
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
+            socket = new Socket("localhost", portNumber);
+            launch();
         } catch (IOException e) {
-        System.out.println(e.getStackTrace());
+        System.out.println(Arrays.toString(e.getStackTrace()));
         }
 
     }
@@ -99,6 +82,21 @@ public class ClientApplication {
                 break;
             case "signup":
                 break;
+        }
+    }
+
+    public void launch() throws IOException {
+        OutputStream output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
+        PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
+        ClientApplicationThread threadListen = new ClientApplicationThread(in);
+        threadListen.start();
+        // loop
+        while (true) {
+            String[] commandAndArgumentsArray = readConsole(out);
+            if (commandAndArgumentsArray.length != 0) { //check if stg has been written
+                readCommand(out, commandAndArgumentsArray);
+            }
         }
     }
 

@@ -2,13 +2,16 @@
 package Model;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Random;
 
 public class ServerThreadNew extends Thread{
     private Socket socketSender;
     private HashMap<String,Socket[]> clientList;
+    private BigInteger key;
     private String sender;
     private String recipient;
     private Socket socketOfRecipient;
@@ -30,34 +33,60 @@ public class ServerThreadNew extends Thread{
 
             switch (header){
                 case "1": //login
-                    sender = dataContent;
-                    String[] newSender = dataContent.split(":");
-                    ClientLogin clientLogin = new ClientLogin(newSender[0], newSender[1]);
-                    if(clientLogin.checkLogin()){
-                        clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
-                        sendToClient(socketSender, "Login successful");
+                    System.out.println(dataContent);
+                    String DecryptedData = AES.decrypt(dataContent,String.valueOf(key)); // Decrypt the received datastring
+                    System.out.println(DecryptedData);
+                    String[] DecryptedSender = DecryptedData.split(":"); // Split the data into a list
+                    sender = DecryptedSender[0];
+                    ClientLogin clientLogin = new ClientLogin(DecryptedSender[0], DecryptedSender[1]); // Create a new ClientLogin object with login password received
+                    if(clientLogin.checkLogin()){ // Verification of the login password
+                        clientList.put(DecryptedSender[0], new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
+                        sendToClient(socketSender, "Login successful"); // Correct login password
                     }
-                    else{
+                    else{ // Incorect login password
                         System.out.println("login failed");
                         sendToClient(socketSender, "False");
                     }
                     break;
                 case "2"://to
                     System.out.println("name of the recipient: " + dataContent);
-                    recipient = dataContent;
+                    String decryptedData = AES.decrypt(dataContent,String.valueOf(key));
+                    recipient = decryptedData;
                     Socket[] socketRecipient = clientList.get(recipient);
                     socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
                     sendToClient(socketSender, "you can now send a message");
                     break;
                 case "3"://send
-                    sendToClient(socketOfRecipient, dataContent);
+                    String decryptedMessage = AES.decrypt(dataContent,String.valueOf(key));
+                    sendToClient(socketOfRecipient, decryptedMessage);
                     System.out.println("send message");
                     break;
 
-                case "4":
+                case "4": // Sign in
+                    String DecryptedData2 = AES.decrypt(dataContent,String.valueOf(key)); // Decryption of thje datastring
+                    String[] newS = DecryptedData2.split(":"); // Split into a list
+                    sender = newS[0];
+                    AccountCreator aC = new AccountCreator(newS[0],newS[1]); // Account creator instanciation with the received data
+                    if(aC.checkLogin()){ // Check if login already exist
+                        System.out.println("This login is already taken choose another"); // login already exist
+                        sendToClient(socketSender,"False");
+                    }else{ // Login is unique
+                        System.out.println("Registering succefful");
+                        aC.saveLoginPassword(); // Save the login password in the database
+                        sendToClient(socketSender,"Login Password saved");
+                    }
                     break;
-
+                case "5": // Quit
+                    break;
+                case "8": // Diffie Hellman key sharing communication
+                    BigInteger s = secretNumber();
+                    sender = dataContent;
+                    String[] PG = dataContent.split(":");
+                    DiffieHellman dh = new DiffieHellman(new BigInteger(PG[0]),new BigInteger(PG[1]));
+                    sendToClient(socketSender, String.valueOf(dh.determineMessage(s)));
+                    key = dh.determineKey(new BigInteger(PG[2]),s);
+                    break;
             }
 
 
@@ -80,6 +109,11 @@ public class ServerThreadNew extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public BigInteger secretNumber(){
+        Random rand = new Random();
+        int int_random = rand.nextInt(30); // Create a random secret number
+        return new BigInteger(String.valueOf(int_random));
     }
 
 }

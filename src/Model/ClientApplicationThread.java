@@ -25,6 +25,7 @@ public class ClientApplicationThread extends Thread {
         try {
             resp = in.readLine();
             setData(resp);
+            System.out.println(resp);
         } catch (IOException e) {
             e.printStackTrace();
         }

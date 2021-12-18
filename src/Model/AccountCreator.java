@@ -13,14 +13,14 @@ public class AccountCreator {
 
     public static void CreateAccount() throws NoSuchAlgorithmException, IOException {
         BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
-        FileWriter fileWriter = new FileWriter("database.txt");
+        FileWriter fileWriter = new FileWriter("database.txt",true);
 
         String login = login();
         String DBLine = reader.readLine();
 
         while( DBLine != null){
             String[] arrayOfData = DBLine.split(":");
-            if (login.equals(arrayOfData[1])){
+            if (login.equals(arrayOfData[0])){
                 System.out.println("This login is already taken");
                 login = login();
                 reader.close();
@@ -28,7 +28,7 @@ public class AccountCreator {
             }
             DBLine = reader.readLine();
         }
-        fileWriter.write(login + " : ");
+        fileWriter.write(login + ":");
 
         String password = password();
 
@@ -40,6 +40,7 @@ public class AccountCreator {
             hexString.append(Integer.toHexString(0xFF & b));
         }
         fileWriter.write(hexString.toString());
+        fileWriter.write("\n");
         fileWriter.close();
     }
 

@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientApplication implements Runnable {
+public class ClientApplication {
     private BufferedReader in;
 
     public ClientApplication(){
@@ -16,8 +16,9 @@ public class ClientApplication implements Runnable {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
                 PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
-                Thread threadListen = new Thread();
+                ClientApplicationThread threadListen = new ClientApplicationThread(in);
                 threadListen.start();
+                //threadListen.run();
                 // loop
                 while (true) {
                     String[] commandAndArgumentsArray = readConsole(out);
@@ -34,16 +35,7 @@ public class ClientApplication implements Runnable {
         }
 
     }
-    private void listenToServer(BufferedReader in) {
-        String resp = null;//reads the server response
-        try {
-            resp = in.readLine();
-            System.out.println(resp);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println(resp);
-    }
+
 
     public void sendToServer(PrintWriter out, int header, String message){
         String messageToSend = header + message;
@@ -86,7 +78,7 @@ public class ClientApplication implements Runnable {
                 break;
             case "send":
                 try{
-                    sendToServer(out, 2, commandAndArgumentsArray[1]);}
+                    sendToServer(out, 3, commandAndArgumentsArray[1]);}
                 catch (ArrayIndexOutOfBoundsException exception){
                     System.out.println("Are you sure you want to send an empty message? \n" +
                             "No judgment but this is a weird idea. \n" +
@@ -99,13 +91,13 @@ public class ClientApplication implements Runnable {
 
                 break;
             case "login":
+                sendToServer(out, 1, commandAndArgumentsArray[1]);
                 //TODO add fucntion which asks for username and password calls readconsole to read user inputs
                 break;
             case "signup":
                 break;
         }
     }
-    public void run() {
-        listenToServer(in);
-    }
+
+
 }

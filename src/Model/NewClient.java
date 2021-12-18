@@ -1,4 +1,4 @@
-/*
+
 package Model;
 
 import java.io.*;
@@ -18,7 +18,7 @@ public class NewClient {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
                 // loop
                 while (true) {
-                    listenToServer(in);
+                    //listenToServer(in);
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written
                         readCommand(out, commandAndArgumentsArray);
@@ -72,31 +72,47 @@ public class NewClient {
                         "if you need help, type 'help'" +
                         "if you want to do something, type the command followed by ':' " +
                         "followed by the command arguments if there are any" +
-                        "---------------------------------------------------------------------\n" +
-                        "COMMAND: + arguments\n" +
-                        "---------------------------------------------------------------------\n" +
-                        "'help'\n" +
-                        "--------------- if you need help\n" +
-                        "'to: + username of your recipient' \n" +
-                        "--------------- to start a conversation with 'username'\n" +
-                        "send: + msg\n" +
-                        "--------------- to send 'msg' to your recipient\n" +
-                        "logout \n" +
-                        "--------------- to disconnect\n" +
-                        "login \n" +
-                        "---------------- to login \n" +
-                        "signup \n" +
-                        "---------------- to sign up\n");
+                        "--------------------------------------------------\n" +
+                        "--------------COMMAND: + arguments----------------\n" +
+                        "--------------------------------------------------\n" +
+                        "'help' ------------------------------------------- if you need help\n" +
+                        "'to: + username of your recipient' --------------- to start a conversation with 'username'\n" +
+                        "send: + msg -------------------------------------- to send 'msg' to your recipient\n" +
+                        "logout ------------------------------------------- to disconnect\n" +
+                        "login -------------------------------------------- to login \n" +
+                        "signup ------------------------------------------- to sign up\n");
+                break;
             case "to":
-                sendToServer(out, 2, commandAndArgumentsArray[1]);
+                try{
+                sendToServer(out, 2, commandAndArgumentsArray[1]);}
+                catch (ArrayIndexOutOfBoundsException exception){
+                    System.out.println("You must mention the username of the person you want to talk to!\n" +
+                            "Try using the command as follows:\n" +
+                            "to: myFriend\n" +
+                            "Type 'help' if you're still lost\n");
+                }
+                break;
             case "send":
-                sendToServer(out, 3, commandAndArgumentsArray[1]);
+                try{
+                    sendToServer(out, 2, commandAndArgumentsArray[1]);}
+                catch (ArrayIndexOutOfBoundsException exception){
+                    System.out.println("Are you sure you want to send an empty message? \n" +
+                            "No judgment but this is a weird idea. \n" +
+                            "Try using the command as follows:\n" +
+                            "send: my message is no longer empty \n" +
+                            "Type 'help' if you're still lost\n");
+                }
+                break;
             case "logout":
 
+                break;
             case "login":
                 //TODO add fucntion which asks for username and password calls readconsole to read user inputs
+                break;
             case "signup":
-        }
-    }
+                break;
+    }}
+
+
 }
-*/
+

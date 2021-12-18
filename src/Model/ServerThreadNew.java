@@ -88,43 +88,21 @@ public class ServerThreadNew extends Thread{
     }
 
     private void soloMode(Socket socket) throws IOException {
-        File f = new File("src/Model/jokeDatabase");
-        String result = null;
+        File listOfJokes = new File("src/Model/jokeDatabase");
+        String joke = null;
         Random rand = new Random();
         int n = 0;
-        Scanner sc = new Scanner(f);
-        while (sc.hasNext()) {
+        Scanner scanner = new Scanner(listOfJokes);
+        while (scanner.hasNext()) {
             ++n;
-            String line = sc.nextLine();
+            String line = scanner.nextLine();
             if (rand.nextInt(n) == 0)
-                result = line;
+                joke = line;
         }
-        sc.close();
-        sendToClient(socket, result);
-
-       /* String fileName = "C:\\Users\\Flo\\IdeaProjects\\NetworkProject\\src\\Model\\jokeDatabase.txt";
-        long numberOfLines = countLineNo(fileName);
-        Random rand = new Random();
-        int lineNumber = rand.nextInt((int) numberOfLines);
-        try{
-            String joke = Files.readAllLines(Paths.get(fileName)).get(lineNumber);
-            sendToClient(socket, joke);
-        }
-        catch(IOException e){
-            System.out.println(e);
-        }*/
+        scanner.close();
+        sendToClient(socket, joke);
 
     }
 
-    public static long countLineNo(String fileName) {
-        Path path = Paths.get(fileName);
-        long numberOfLines = 0;
-        try {
-            numberOfLines = Files.lines(path).count();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return numberOfLines;
 
-    }
 }

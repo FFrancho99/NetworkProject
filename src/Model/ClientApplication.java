@@ -22,9 +22,37 @@ public class ClientApplication {
                 ClientApplicationThread threadListen = new ClientApplicationThread(in, this);
                 threadListen.start();
 
-                launch(out);
+                // loop
+                System.out.println("Do you want to login or signup?");
+                Scanner scanner = new Scanner(System.in);
+                switch (scanner.nextLine()){
+                    case "login": {
+                        ClientLogin cl = new ClientLogin();
+                        cl.setLogin();
+                        cl.setPassword();
+                        String data = cl.getLogin() + ":" + cl.getPassword();
+                        sendToServer(out, 1, data);
+                        System.out.println("sent to server");
+                        while(mess.equals("False")){
+                            System.out.println("Wrong login or password");
+                            cl.setLogin();
+                            cl.setPassword();
+                            data = cl.getLogin() + ":" + cl.getPassword();
+                            sendToServer(out, 1, data);
+                        }
+                    }
+                    case "signup":{
+                        // TODO: 18/12/2021
+                    }
+                }
+                while (true) {
+                    String[] commandAndArgumentsArray = readConsole(out);
+                    if (commandAndArgumentsArray.length != 0) { //check if stg has been written
+                        readCommand(out, commandAndArgumentsArray);
+                    }
+                }
             }
-            catch (IOException | InterruptedException e) {
+            catch (IOException e) {
                 e.printStackTrace();
             }
         } catch (IOException e) {

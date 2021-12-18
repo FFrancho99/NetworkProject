@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientApplication implements Runnable {
+public class ClientApplication {
     private BufferedReader in;
 
     public ClientApplication(){
@@ -16,7 +16,7 @@ public class ClientApplication implements Runnable {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
                 PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
-                Thread threadListen = new Thread();
+                ClientApplicationThread threadListen = new ClientApplicationThread(in);
                 threadListen.start();
                 //threadListen.run();
                 // loop
@@ -35,16 +35,7 @@ public class ClientApplication implements Runnable {
         }
 
     }
-    private void listenToServer(BufferedReader in) {
-        String resp = null;//reads the server response
-        try {
-            resp = in.readLine();
-            System.out.println(resp);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-    }
 
     public void sendToServer(PrintWriter out, int header, String message){
         String messageToSend = header + message;
@@ -108,9 +99,5 @@ public class ClientApplication implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        System.out.println("in run");
-        listenToServer(in);
-    }
+
 }

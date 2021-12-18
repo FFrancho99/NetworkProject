@@ -1,5 +1,7 @@
 package Model;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -8,22 +10,28 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class AccountCreator {
-    private String login;
-    private String password;
 
-    AccountCreator(String login, String password){
-        this.login = login;
-        this.password = password;
-    }
-
-    private void CreateAccount() throws NoSuchAlgorithmException, IOException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your UserName : ");
-        this.login = scanner.nextLine();
+    public static void CreateAccount() throws NoSuchAlgorithmException, IOException {
+        BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
         FileWriter fileWriter = new FileWriter("database.txt");
-        fileWriter.write(login + " ");
-        System.out.println("Enter your Password : ");
-        this.password = scanner.nextLine();
+
+        String login = login();
+        String DBLine = reader.readLine();
+
+        while( DBLine != null){
+            String[] arrayOfData = DBLine.split(":");
+            if (login.equals(arrayOfData[1])){
+                System.out.println("This login is already taken");
+                login = login();
+                reader.close();
+                reader = new BufferedReader(new FileReader("database.txt"));
+            }
+            DBLine = reader.readLine();
+        }
+        fileWriter.write(login + " : ");
+
+        String password = password();
+
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         messageDigest.update(password.getBytes());
         byte[] digest = messageDigest.digest();
@@ -33,5 +41,16 @@ public class AccountCreator {
         }
         fileWriter.write(hexString.toString());
         fileWriter.close();
+    }
+
+    public static String login(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your UserName : ");
+        return scanner.nextLine();
+    }
+    public static String password(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your Password : ");
+        return scanner.nextLine();
     }
 }

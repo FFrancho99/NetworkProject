@@ -4,7 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ClientApplication {
+public class ClientApplication implements Runnable {
+    private BufferedReader in;
 
     public ClientApplication(){
         try{
@@ -14,10 +15,11 @@ public class ClientApplication {
             try {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
                 PrintWriter out = new PrintWriter(output, true);// wrap it in a PrintWriter to send data in text format
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
+                Thread threadListen = new Thread();
+                threadListen.start();
                 // loop
                 while (true) {
-                    //listenToServer(in);
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written
                         readCommand(out, commandAndArgumentsArray);
@@ -101,5 +103,9 @@ public class ClientApplication {
                 break;
             case "signup":
                 break;
-        }}
+        }
+    }
+    public void run() {
+        listenToServer(in);
+    }
 }

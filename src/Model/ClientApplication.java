@@ -61,6 +61,7 @@ public class ClientApplication {
                         "--------------------------------------------------\n" +
                         "'help' ------------------------------------------- if you need help\n" +
                         "'to: + username of your recipient' --------------- to start a conversation with 'username'\n" +
+                        "solo --------------------------------------------- to start talking with an imaginary friend\n" +
                         "send: + msg -------------------------------------- to send 'msg' to your recipient\n" +
                         "logout ------------------------------------------- to disconnect\n" +
                         "login -------------------------------------------- to login \n" +
@@ -76,6 +77,8 @@ public class ClientApplication {
                             "Type 'help' if you're still lost\n");
                 }
                 break;
+            case "solo":
+
             case "send":
                 try{
                     sendToServer(out, 3, commandAndArgumentsArray[1]);}

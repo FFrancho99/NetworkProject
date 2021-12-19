@@ -63,6 +63,7 @@ public class ServerThreadNew extends Thread{
                     socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
                     clientList.put(recipient,new Socket[]{socketOfRecipient,socketSender});
+                    System.out.println(sender + " want to talk to " + recipient);
                     //sendToClient(socketSender, "D:you can now send a message");
                     break;
                 case "3"://send
@@ -92,7 +93,9 @@ public class ServerThreadNew extends Thread{
                     soloMode(socketSender);
                     break;
                 case "7": // Diffie Hellman key sharing Client-Client
-                    data = "DH:" + dataContent;
+                    System.out.println("Cas numéro 7");
+                    data = "DH:" + dataContent + ":" + sender;
+                    System.out.println("Envoi de la clé à " + socketOfRecipient);
                     sendToClient(socketOfRecipient, data);
                     break;
                 case "8": // Diffie Hellman key sharing communication server-client
@@ -105,10 +108,10 @@ public class ServerThreadNew extends Thread{
                     key = dh.determineKey(new BigInteger(PG[2]),s);
                     break;
                 case "9":
-
+                    String[] dataArray = dataContent.split(":");
                     System.out.println("data received");
-                    data = "DH2:" + dataContent;
-                    sendToClient(socketOfRecipient,data);
+                    data = "DH2:" + dataArray[0];
+                    sendToClient(clientList.get(dataArray[1])[0],data);
                     break;
             }
 

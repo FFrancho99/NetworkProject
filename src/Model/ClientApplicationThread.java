@@ -29,7 +29,7 @@ public class ClientApplicationThread extends Thread {
             e.printStackTrace();
         }
     }
-    public void setData(String data){
+    public void setData(String data) throws IOException {
         String header = String.valueOf(data.charAt(0));
         String[] dataContent = data.split(":");
         if(header.equals("D")){
@@ -37,7 +37,7 @@ public class ClientApplicationThread extends Thread {
             this.data = dataContent[1];
             clientApplication.update(this.data);
         }else if(header.equals("DH")){
-            clientApplication.setClientKey(new BigInteger(dataContent[1]),new BigInteger(dataContent[2]),new BigInteger(dataContent[3]));
+            clientApplication.setClientKey(new BigInteger(dataContent[1]),new BigInteger(dataContent[2]),new BigInteger(dataContent[3]),dataContent[4]);
         }else if(header.equals("DH2")){
             System.out.println("DH2 received");
             this.data = dataContent[1];

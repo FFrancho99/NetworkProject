@@ -43,7 +43,7 @@ public class ClientApplication implements ClientObserver {
                             String DHdata = dh.getP() + ":" + dh.getG() + ":" + dh.determineMessage(s); // Data array instanciation with P, G and the secret message value
                             sendToServer(out,8, DHdata); // Data sharing with the host in clear
                             waiting();
-                            this.maj = false;
+
                             serverKey = dh.determineKey(new BigInteger(mess),s); // Key determination with the server message and personnal secret number
 
                             // Login password verification
@@ -157,7 +157,6 @@ public class ClientApplication implements ClientObserver {
                     waiting();
                     System.out.println(mess);
                     clientKey = DH.determineKey(new BigInteger(mess),s);
-                    System.out.println(clientKey);
                 }
                 catch (ArrayIndexOutOfBoundsException exception){
                     System.out.println("You must mention the username of the person you want to talk to!\n" +
@@ -220,12 +219,15 @@ public class ClientApplication implements ClientObserver {
         this.maj = true;
     }
 
-    public void setClientKey(BigInteger p, BigInteger g, BigInteger m){
+    public void setClientKey(BigInteger p, BigInteger g, BigInteger m, String sender) throws IOException {
+
         DiffieHellman Dh = new DiffieHellman(p,g);
         BigInteger s = secretNumber();
         this.m2 = Dh.determineMessage(s);
         clientKey = Dh.determineKey(m,s);
-        System.out.println(clientKey);
-        sendToServer(out,9,String.valueOf(m2));
+        System.out.println("clé DH" + clientKey);
+        String data = m2 + ":" + sender;
+        System.out.println("data to send " + data);
+        sendToServer(out,9,data);
     }
 }

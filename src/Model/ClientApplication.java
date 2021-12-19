@@ -2,6 +2,7 @@ package Model;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,14 +15,17 @@ public class ClientApplication implements ClientObserver {
     private Boolean maj = false;
     private BigInteger serverKey;
     private BigInteger clientKey;
-    private BigInteger m2;
     private Socket socket;
+    private BigInteger m2;
     private PrintWriter out;
 
     public ClientApplication() {
         try{
-            int portNumber = 666;
-            Socket socket = new Socket("localhost", portNumber);
+            int serverPortNumber = 666;
+            this.socket = setSocket();
+            //InetAddress serverAddress = "localhost";
+            String serverAddress = "localhost";
+            Socket socket = new Socket(serverAddress, serverPortNumber);
             OutputStream output;
             try {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
@@ -113,6 +117,8 @@ public class ClientApplication implements ClientObserver {
         }
 
     }
+
+    private Socket setSocket() {    }
 
     public void sendToServer(PrintWriter out, int header, String message){
         String messageToSend = header + message;

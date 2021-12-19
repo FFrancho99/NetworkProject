@@ -9,12 +9,12 @@ import java.util.HashMap;
 public class Server {
     private static ServerSocket serverSocket;
     public static void main(String[] args) {
-        int portNumber = 666;
+        int serverPortNumber = 666;
         serverSocket = null;
         ArrayList<ServerThreadNew>  threadArrayList = new ArrayList<>();
         HashMap<String, Socket[]> clientList = new HashMap<>(); //HashMap contains the userNames (key) with the corresponding socket (value)
         try {
-            serverSocket = new ServerSocket(portNumber); //creates the socket of the server
+            serverSocket = new ServerSocket(serverPortNumber); //creates the socket of the server
             System.out.println("Model.Server started");
         }catch (IOException e) {
             System.out.println("Unable to request port");

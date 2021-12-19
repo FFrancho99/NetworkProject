@@ -22,7 +22,26 @@ public class ClientLogin {
         this.password = password;
     }
 
-    public boolean checkLogin() throws NoSuchAlgorithmException, IOException{
+    public ClientLogin(String login){
+        this.login = login;
+    }
+
+    public boolean checkLogin() throws IOException, NoSuchAlgorithmException {
+        Boolean test = false;
+        BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
+        String DBLine = reader.readLine();
+        while( DBLine != null){
+            String[] arrayOfData = DBLine.split(":");
+            if (login.equals(arrayOfData[0])){
+                test = true;
+            }
+            DBLine = reader.readLine();
+        }
+        reader.close();
+        return test;
+    }
+
+    public boolean checkPassword() throws NoSuchAlgorithmException, IOException{
         BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");

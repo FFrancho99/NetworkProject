@@ -16,6 +16,7 @@ public class ServerThreadNew extends Thread{
     private String sender;
     private String recipient;
     private Socket socketOfRecipient;
+    private int nonce;
 
     public ServerThreadNew(Socket socket, HashMap<String,Socket[]> clientList){
         this.socketSender = socket;
@@ -29,25 +30,30 @@ public class ServerThreadNew extends Thread{
             BufferedReader reader = new BufferedReader(new InputStreamReader(input)); //wrap the InputStream in a BufferedReader to read data as String
             while(true){
                 String data = reader.readLine(); //reads the userName sent by the client
-                String header = String.valueOf(data.charAt(0));
-                String dataContent = data.substring(1);
+                String[] dataC = data.split("-");
+                String dataContent = dataC[1];
+                String header = dataC[0];
 
 
 
             switch (header){
                 case "1": //login
+                    System.out.println("Encrypted login received " + dataContent);
                     String DecryptedData = AES.decrypt(dataContent,String.valueOf(key)); // Decrypt the received datastring
                     String[] DecryptedDataArry = DecryptedData.split(":"); // Split the data into a list
                     sender = DecryptedDataArry[0]; // First element of the data is the login
-                    ClientLogin clientLogin = new ClientLogin(DecryptedDataArry[0], DecryptedDataArry[1]); // Create a new ClientLogin object with login password received
+                    ClientLogin clientLogin = new ClientLogin(DecryptedDataArry[0]); // Create a new ClientLogin object with login password received
                     if(clientLogin.checkLogin()){ // Verification of the login password
                         clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
-                        sendToClient(clientList.get(sender)[0], "D:Login successful"); // Correct login password
+                        Random rand = new Random();
+                        nonce = rand.nextInt(1000000);
+                        data = "N:" + nonce;
+                        sendToClient(socketSender, data); // Correct login
                     }
-                    else{ // Incorect login password
-                        System.out.println("login failed");
+                    else{ // Incorect login
                         sendToClient(socketSender, "H:False");
                     }
+
                     break;
                 case "2"://to
                     // Recipient of the conversation
@@ -71,7 +77,7 @@ public class ServerThreadNew extends Thread{
                     System.out.println("message sent");
                     break;
 
-                case "4": // Sign in
+                case "4": // Sign up
                     String DecryptedData2 = AES.decrypt(dataContent,String.valueOf(key)); // Decryption of thje datastring
                     String[] newS = DecryptedData2.split(":"); // Split into a list
                     sender = newS[0];
@@ -108,6 +114,24 @@ public class ServerThreadNew extends Thread{
                     data = "DH2:" + dataArray[0];
                     sendToClient(clientList.get(dataArray[1])[0],data);
                     break;
+                case "10": //nonce reception
+                    String receivedNonce = dataContent;
+                    String decryptedNonce = AES.decrypt(receivedNonce, String.valueOf(key));
+                    if(decryptedNonce.equals(String.valueOf(nonce))){
+                        sendToClient(clientList.get(sender)[0], "H:true");
+                    }else {
+                        sendToClient(clientList.get(sender)[0], "H:false");
+                    }break;
+                case "11":
+                    String decryptedData3 = AES.decrypt(dataContent, String.valueOf(key));
+                    String[] arrayOfDecryptedData3 = decryptedData3.split(":");
+                    ClientLogin cl = new ClientLogin(arrayOfDecryptedData3[0], arrayOfDecryptedData3[1]);
+                    if(cl.checkPassword()){ // Verification of the login password
+                        sendToClient(clientList.get(sender)[0], "D:login successful"); // Correct password
+                    }
+                    else{
+                        sendToClient(clientList.get(sender)[0], "False");
+                    }break;
             }
             }
 

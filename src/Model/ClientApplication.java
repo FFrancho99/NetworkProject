@@ -31,10 +31,10 @@ public class ClientApplication implements ClientObserver {
                 threadListen.start();
 
                 // loop
-                System.out.println("Do you want to login or signup?");
                 Scanner scanner = new Scanner(System.in);
                 boolean control = false;
                 while (!control){
+                    System.out.println("Do you want to login or signup?");
                     switch (scanner.nextLine()){ // Choice of login or Account creation
                         case "login": {
                             // Diffie Hellman key sharing to encrypt communications
@@ -43,28 +43,42 @@ public class ClientApplication implements ClientObserver {
                             String DHdata = dh.getP() + ":" + dh.getG() + ":" + dh.determineMessage(s); // Data array instanciation with P, G and the secret message value
                             sendToServer(out,8, DHdata); // Data sharing with the host in clear
                             waiting();
-
                             serverKey = dh.determineKey(new BigInteger(mess),s); // Key determination with the server message and personnal secret number
-
-                            // Login password verification
+                            // Login verification
                             ClientLogin cl = new ClientLogin(); // Client Login object instanciation
                             cl.setLogin(); // Ask the login to the user
-                            cl.setPassword(); // Ask the password to the user
-                            String data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
+                            String data = cl.getLogin(); // Set login password in a data array
                             String Crypteddata = AES.encrypt(data, String.valueOf(serverKey)); // Encrypt the datastring thanks to the key
                             sendToServer(out, 1, Crypteddata); // Send the encrypted data to the server
                             waiting();
-                            while(mess.equals("False")){ // If login password is false ask agait
-                                this.maj = false;
-                                System.out.println("Wrong login or password");
-                                cl.setLogin(); // Ask again for login
-                                cl.setPassword(); // Ask again for password
-                                data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
-                                Crypteddata = AES.encrypt(data, String.valueOf(serverKey)); // Encrypt datastring thanks to the key
-                                sendToServer(out, 1, Crypteddata); // Send crypted data to the server
-                                waiting();
-                            }
                             control = true;
+                            if(mess.equals("False")){ // If login doesn't exist
+                                System.out.println("This login doesn't exist, please create an account");
+                                control = false;
+                                break;
+                            }
+                            String nonce = mess;
+                            String cryptedNonce = AES.encrypt(nonce, String.valueOf(serverKey));//encrypter le nonce using key
+                            sendToServer(out, 10, cryptedNonce);
+                            waiting();
+                            if(mess.equals("true")){
+                                cl.setPassword();
+                                data = cl.getLogin() + ":" + cl.getPassword();
+                                String cryptedData = AES.encrypt(data, String.valueOf(serverKey));
+                                sendToServer(out, 11, cryptedData);
+                                waiting();
+                                while(mess.equals("False")){
+                                    System.out.println("Wrong password");
+                                    cl.setPassword();
+                                    data = cl.getLogin() + ":" + cl.getPassword();
+                                    cryptedData = AES.encrypt(data, String.valueOf(serverKey));
+                                    sendToServer(out, 11, cryptedData);
+                                    waiting();
+                                }
+                            }
+                            //envoyer le encrypted nonce
+                            //if nonce not okay, print "authentication faile, please try again" + control = false;
+                            System.out.println("You can now use commands");
                         }break;
                         case "signup": {
                             AccountCreator aC = new AccountCreator(); // Create an AccountCreator object
@@ -89,7 +103,6 @@ public class ClientApplication implements ClientObserver {
                             data = cl.getLogin() + ":" + cl.getPassword();
                             Crypteddata = AES.encrypt(data, String.valueOf(serverKey));
                             sendToServer(out, 1, Crypteddata);
-                            waiting();
                             control = true;
                         }break;
                         default:{
@@ -97,7 +110,7 @@ public class ClientApplication implements ClientObserver {
                         }
                     }
                 }
-                System.out.println("You can now use commands");
+
                 while (true) {
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written
@@ -115,7 +128,7 @@ public class ClientApplication implements ClientObserver {
     }
 
     public void sendToServer(PrintWriter out, int header, String message){
-        String messageToSend = header + message;
+        String messageToSend = header + "-" + message;
         out.println(messageToSend);
     }
 
@@ -203,7 +216,7 @@ public class ClientApplication implements ClientObserver {
         while(!maj){
             try { //Just for the sake of compiling - you may think of a better solution
                 System.out.println("waiting for server");
-                Thread.currentThread().sleep(1000);
+                Thread.currentThread().sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

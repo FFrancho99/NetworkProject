@@ -37,12 +37,19 @@ public class ClientApplicationThread extends Thread {
             System.out.println(dataContent[1]);
             this.data = dataContent[1];
             clientApplication.update(this.data);
-        }else if(header.equals("DH")){
-            key = clientApplication.setClientKey(new BigInteger(dataContent[1]),new BigInteger(dataContent[2]),new BigInteger(dataContent[3]),dataContent[4]);
-        }else if(header.equals("DH2")){
+        }
+        else if(header.equals("N")){
             this.data = dataContent[1];
             clientApplication.update(this.data);
-        }else if(header.equals("E")){
+        }
+        else if(header.equals("DH")){
+            key = clientApplication.setClientKey(new BigInteger(dataContent[1]),new BigInteger(dataContent[2]),new BigInteger(dataContent[3]),dataContent[4]);
+        }
+        else if(header.equals("DH2")){
+            this.data = dataContent[1];
+            clientApplication.update(this.data);
+        }
+        else if(header.equals("E")){
             String message = AES.decrypt(dataContent[1],String.valueOf(key));
             System.out.println(message);
         }else if(header.equals("J")){

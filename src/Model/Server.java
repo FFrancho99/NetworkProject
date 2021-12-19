@@ -18,12 +18,14 @@ public class Server {
 
 
         try {
-            if (args.length ==0){ // if IP address is NOT provided when starting the server
-                serverSocket = new ServerSocket(serverPortNumber); //creates the socket of the server
+            int serverBacklog = 0; // 0 for default value
+            if (args.length == 0){ // if IP address is NOT provided when starting the server
+                //InetAddress serverAddress = InetAddress.getLocalHost();
+                //serverSocket = new ServerSocket(serverPortNumber, serverBacklog, serverAddress); //creates the socket of the server
                                                         // IP address is localhost as it is not precised
+                serverSocket = new ServerSocket(serverPortNumber);
             }
             else {
-                int serverBacklog = 0; // 0 for default value
                 InetAddress serverAddress = InetAddress.getByName(args[0]);
                 serverSocket = new ServerSocket(serverPortNumber, serverBacklog, serverAddress); //creates the socket of the server
             }

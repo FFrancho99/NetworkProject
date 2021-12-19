@@ -45,6 +45,7 @@ public class ServerThreadNew extends Thread{
                     ClientLogin clientLogin = new ClientLogin(DecryptedDataArry[0]); // Create a new ClientLogin object with login password received
                     if(clientLogin.checkLogin()){ // Verification of the login password
                         clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
+                        System.out.println(sender + " added to the clientList");
                         Random rand = new Random();
                         nonce = rand.nextInt(1000000);
                         data = "N:" + nonce;

@@ -20,6 +20,7 @@ public class ClientApplication implements ClientObserver {
     private int serverPortNumber;
     private String serverHostName;
     private InetAddress serverAddress;
+    private Boolean newClient = false;
 
     public ClientApplication(String hostName, int portNumber) {
         this.serverPortNumber = portNumber;
@@ -42,21 +43,21 @@ public class ClientApplication implements ClientObserver {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));//to receive the data from the server
                 ClientApplicationThread threadListen = new ClientApplicationThread(in, this);
                 threadListen.start();
-
-                // loop
                 Scanner scanner = new Scanner(System.in);
+
+                // Diffie Hellman key sharing to encrypt communications
+                DiffieHellman dh = new DiffieHellman(definePG()); // DiffieHellman class instanciation
+                BigInteger s = secretNumber(); // Secret number based on P and G determination
+                String DHdata = dh.getP() + ":" + dh.getG() + ":" + dh.determineMessage(s); // Data array instanciation with P, G and the secret message value
+                sendToServer(out,8, DHdata); // Data sharing with the host in clear
+                waiting();
+                serverKey = dh.determineKey(new BigInteger(mess),s); // Key determination with the server message and personnal secret number
+
                 boolean control = false;
                 while (!control){
                     System.out.println("Do you want to login or signup?");
                     switch (scanner.nextLine()){ // Choice of login or Account creation
                         case "login": {
-                            // Diffie Hellman key sharing to encrypt communications
-                            DiffieHellman dh = new DiffieHellman(definePG()); // DiffieHellman class instanciation
-                            BigInteger s = secretNumber(); // Secret number based on P and G determination
-                            String DHdata = dh.getP() + ":" + dh.getG() + ":" + dh.determineMessage(s); // Data array instanciation with P, G and the secret message value
-                            sendToServer(out,8, DHdata); // Data sharing with the host in clear
-                            waiting();
-                            serverKey = dh.determineKey(new BigInteger(mess),s); // Key determination with the server message and personnal secret number
                             // Login verification
                             ClientLogin cl = new ClientLogin(); // Client Login object instanciation
                             cl.setLogin(); // Ask the login to the user
@@ -91,10 +92,9 @@ public class ClientApplication implements ClientObserver {
                             }
                             //envoyer le encrypted nonce
                             //if nonce not okay, print "authentication faile, please try again" + control = false;
-                            System.out.println("You can now use commands\n" +
-                                    "type 'help' if you need help");
                         }break;
                         case "signup": {
+                            newClient = true;
                             AccountCreator aC = new AccountCreator(); // Create an AccountCreator object
                             aC.setLogin(); // Ask for a new login
                             aC.setPassword(); // Ask for a new password
@@ -124,7 +124,8 @@ public class ClientApplication implements ClientObserver {
                         }
                     }
                 }
-
+                System.out.println("You can now use commands\n" +
+                        "type 'help' if you need help");
                 while (true) {
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written
@@ -179,6 +180,9 @@ public class ClientApplication implements ClientObserver {
                     String DHdata = DH.getP() + ":" + DH.getG() + ":" + DH.determineMessage(s); // Data array instanciation with P, G and the secret message value
                     sendToServer(out,7,DHdata); // Send DH data to the recipient
                     waiting();
+                    if(newClient){
+                        waiting();
+                    }
                     clientKey = DH.determineKey(new BigInteger(mess),s);
                     System.out.println("the server's ready, send your message using the command 'send:'");
                 }

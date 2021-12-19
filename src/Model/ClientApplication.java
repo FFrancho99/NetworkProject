@@ -155,9 +155,7 @@ public class ClientApplication implements ClientObserver {
                     String DHdata = DH.getP() + ":" + DH.getG() + ":" + DH.determineMessage(s); // Data array instanciation with P, G and the secret message value
                     sendToServer(out,7,DHdata); // Send DH data to the recipient
                     waiting();
-                    System.out.println(mess);
                     clientKey = DH.determineKey(new BigInteger(mess),s);
-                    System.out.println("la clé coté client 1 est " + clientKey);
                 }
                 catch (ArrayIndexOutOfBoundsException exception){
                     System.out.println("You must mention the username of the person you want to talk to!\n" +
@@ -170,7 +168,7 @@ public class ClientApplication implements ClientObserver {
 
             case "send":
                 try{
-                    String encryptedData = AES.encrypt(commandAndArgumentsArray[1],String.valueOf(serverKey)); // Encryption of the data to send
+                    String encryptedData = AES.encrypt(commandAndArgumentsArray[1],String.valueOf(clientKey)); // Encryption of the data to send
                     sendToServer(out, 3, encryptedData);}
                 catch (ArrayIndexOutOfBoundsException exception){
                     System.out.println("Are you sure you want to send an empty message? \n" +
@@ -220,15 +218,14 @@ public class ClientApplication implements ClientObserver {
         this.maj = true;
     }
 
-    public void setClientKey(BigInteger p, BigInteger g, BigInteger m, String sender) throws IOException {
+    public BigInteger setClientKey(BigInteger p, BigInteger g, BigInteger m, String sender) throws IOException {
 
         DiffieHellman Dh = new DiffieHellman(p,g);
         BigInteger s = secretNumber();
         this.m2 = Dh.determineMessage(s);
         clientKey = Dh.determineKey(m,s);
-        System.out.println("La clé côté client 2 est" + clientKey);
         String data = m2 + ":" + sender;
-        System.out.println("data to send " + data);
         sendToServer(out,9,data);
+        return clientKey;
     }
 }

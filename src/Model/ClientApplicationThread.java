@@ -9,6 +9,7 @@ public class ClientApplicationThread extends Thread {
     private final BufferedReader in;
     private final ClientApplication clientApplication;
     private String data;
+    private BigInteger key;
 
     public  ClientApplicationThread(BufferedReader in, ClientApplication clientApplication){
         this.in = in;
@@ -24,7 +25,6 @@ public class ClientApplicationThread extends Thread {
         String resp; //reads the server response
         try {
             resp = in.readLine();
-            System.out.println("réponse du server " + resp);
             setData(resp);
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,12 +38,13 @@ public class ClientApplicationThread extends Thread {
             this.data = dataContent[1];
             clientApplication.update(this.data);
         }else if(header.equals("DH")){
-            System.out.println("data DH reçu " + dataContent);
-            clientApplication.setClientKey(new BigInteger(dataContent[1]),new BigInteger(dataContent[2]),new BigInteger(dataContent[3]),dataContent[4]);
+            key = clientApplication.setClientKey(new BigInteger(dataContent[1]),new BigInteger(dataContent[2]),new BigInteger(dataContent[3]),dataContent[4]);
         }else if(header.equals("DH2")){
-            System.out.println("DH2 received");
             this.data = dataContent[1];
             clientApplication.update(this.data);
+        }else if(header.equals("E")){
+            String message = AES.decrypt(dataContent[1],String.valueOf(key));
+            System.out.println(message);
         }
         else{
             this.data = dataContent[1];

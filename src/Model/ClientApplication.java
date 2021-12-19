@@ -91,7 +91,8 @@ public class ClientApplication implements ClientObserver {
                             }
                             //envoyer le encrypted nonce
                             //if nonce not okay, print "authentication faile, please try again" + control = false;
-                            System.out.println("You can now use commands");
+                            System.out.println("You can now use commands\n" +
+                                    "type 'help' if you need help");
                         }break;
                         case "signup": {
                             AccountCreator aC = new AccountCreator(); // Create an AccountCreator object
@@ -179,6 +180,7 @@ public class ClientApplication implements ClientObserver {
                     sendToServer(out,7,DHdata); // Send DH data to the recipient
                     waiting();
                     clientKey = DH.determineKey(new BigInteger(mess),s);
+                    System.out.println("the server's ready, send your message using the command 'send:'");
                 }
                 catch (ArrayIndexOutOfBoundsException exception){
                     System.out.println("You must mention the username of the person you want to talk to!\n" +

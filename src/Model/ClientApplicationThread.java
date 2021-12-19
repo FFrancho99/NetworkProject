@@ -38,6 +38,11 @@ public class ClientApplicationThread extends Thread {
             this.data = dataContent[1];
             clientApplication.update(this.data);
         }
+        else if(header.equals("M")){
+            System.out.println("message: "+dataContent[1]);
+            this.data = dataContent[1];
+            clientApplication.update(this.data);
+        }
         else if(header.equals("N")){
             this.data = dataContent[1];
             clientApplication.update(this.data);

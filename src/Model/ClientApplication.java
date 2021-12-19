@@ -15,14 +15,19 @@ public class ClientApplication implements ClientObserver {
     private Boolean maj = false;
     private BigInteger serverKey;
     private BigInteger clientKey;
-    private Socket socket;
     private BigInteger m2;
     private PrintWriter out;
 
-    public ClientApplication() {
+    public ClientApplication(String hostName, int portNumber) {
+        functionClientApplication();
+    }
+    public ClientApplication(InetAddress serverAddress, int portNumber){
+        functionClientApplication();
+    }
+
+    public void functionClientApplication(){
         try{
             int serverPortNumber = 666;
-            this.socket = setSocket();
             //InetAddress serverAddress = "localhost";
             String serverAddress = "localhost";
             Socket socket = new Socket(serverAddress, serverPortNumber);
@@ -113,12 +118,9 @@ public class ClientApplication implements ClientObserver {
                 e.printStackTrace();
             }
         } catch (IOException e) {
-        System.out.println(Arrays.toString(e.getStackTrace()));
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
-
     }
-
-    private Socket setSocket() {    }
 
     public void sendToServer(PrintWriter out, int header, String message){
         String messageToSend = header + message;

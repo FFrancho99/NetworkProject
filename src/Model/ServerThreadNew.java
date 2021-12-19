@@ -64,7 +64,14 @@ public class ServerThreadNew extends Thread{
                     //sendToClient(socketSender, "D:you can now send a message");
                     break;
                 case "3"://send
+                    FileWriter fileWriter = new FileWriter("CryptedConversations.txt",true);
+
                     data = "E:" + dataContent;
+
+                    fileWriter.write(dataContent);
+                    fileWriter.write("\n");
+                    fileWriter.close();
+
                     sendToClient(clientList.get(sender)[1], data);
                     System.out.println("message sent");
                     break;

@@ -65,7 +65,6 @@ public class ClientApplication implements ClientObserver {
                                 waiting();
                             }
                             control = true;
-                            System.out.println("You can now use commands");
                         }break;
                         case "signup": {
                             AccountCreator aC = new AccountCreator(); // Create an AccountCreator object
@@ -90,6 +89,7 @@ public class ClientApplication implements ClientObserver {
                             data = cl.getLogin() + ":" + cl.getPassword();
                             Crypteddata = AES.encrypt(data, String.valueOf(serverKey));
                             sendToServer(out, 1, Crypteddata);
+                            waiting();
                             control = true;
                         }break;
                         default:{
@@ -97,7 +97,7 @@ public class ClientApplication implements ClientObserver {
                         }
                     }
                 }
-
+                System.out.println("You can now use commands");
                 while (true) {
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written

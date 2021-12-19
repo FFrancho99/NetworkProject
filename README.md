@@ -13,6 +13,12 @@ trouvez le document texte "database.txt" dans les fichiers et copiez son chemin 
 trouvez le document texte "jokeDatabase.txt" dans les fichiers et copiez son chemin d'accès (copy path). Vous allez ensuite devoir modifier le chemin d'accès à ce fichier dans certains endroits du code (où il sera indiquer "ADD YOUR PATH TO JOKEDATABASE"):
 1- Dans le fichier ServerThreadNew ligne 165
 
+Pour finir, ouvrez le projet avec Intellij allez dans l'onglet build -> built artefacts -> all artifacts.
+
+Tous vos fichiers sont maintenant bien setup
+
+//
+
 you can now start the Server application: 
 open a command prompt and go to NetworkProject\out\artifacts\Server_jar (using cd command in windows prompt)
 use the command: 

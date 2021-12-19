@@ -38,8 +38,7 @@ public class ClientApplication implements ClientObserver {
                         BigInteger s = secretNumber(); // Secret number based on P and G determination
                         String DHdata = dh.getP() + ":" + dh.getG() + ":" + dh.determineMessage(s); // Data array instanciation with P, G and the secret message value
                         sendToServer(out,8, DHdata); // Data sharing with the host in clear
-                        while(!maj){ // Wait for the answer
-                        }
+                        waiting();
                         this.maj = false;
                         key = dh.determineKey(new BigInteger(mess),s); // Key determination with the server message and personnal secret number
 
@@ -50,9 +49,8 @@ public class ClientApplication implements ClientObserver {
                         String data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
                         String Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt the datastring thanks to the key
                         sendToServer(out, 1, Crypteddata); // Send the encrypted data to the server
-                        while(!maj){
-                            System.out.println("boucle");
-                        } // Wait for the response
+                        waiting();
+                        System.out.println("out of boucle");
                         while(mess.equals("False")){ // If login password is false ask agait
                             this.maj = false;
                             System.out.println("Wrong login or password");
@@ -215,6 +213,16 @@ public class ClientApplication implements ClientObserver {
         Random rand = new Random();
         int int_random = rand.nextInt(30); // Create a random secret number
         return new BigInteger(String.valueOf(int_random));
+    }
+    public synchronized void waiting(){
+        while(!maj){
+            try { //Just for the sake of compiling - you may think of a better solution
+                System.out.println("waiting for server");
+                Thread.currentThread().sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } // Wait for the response
     }
 
     @Override

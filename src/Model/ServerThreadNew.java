@@ -95,8 +95,8 @@ public class ServerThreadNew extends Thread{
                 case "7": // Diffie Hellman key sharing Client-Client
                     System.out.println("Cas numéro 7");
                     data = "DH:" + dataContent + ":" + sender;
-                    System.out.println("Envoi de la clé à " + socketOfRecipient);
-                    sendToClient(socketOfRecipient, data);
+                    System.out.println("Envoi de la clé à " + socketOfRecipient + " " + clientList.get(sender)[1] + " " + recipient);
+                    sendToClient(clientList.get(sender)[1], data);
                     break;
                 case "8": // Diffie Hellman key sharing communication server-client
                     BigInteger s = secretNumber();

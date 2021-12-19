@@ -157,6 +157,7 @@ public class ClientApplication implements ClientObserver {
                     waiting();
                     System.out.println(mess);
                     clientKey = DH.determineKey(new BigInteger(mess),s);
+                    System.out.println("la clé coté client 1 est " + clientKey);
                 }
                 catch (ArrayIndexOutOfBoundsException exception){
                     System.out.println("You must mention the username of the person you want to talk to!\n" +
@@ -225,7 +226,7 @@ public class ClientApplication implements ClientObserver {
         BigInteger s = secretNumber();
         this.m2 = Dh.determineMessage(s);
         clientKey = Dh.determineKey(m,s);
-        System.out.println("clé DH" + clientKey);
+        System.out.println("La clé côté client 2 est" + clientKey);
         String data = m2 + ":" + sender;
         System.out.println("data to send " + data);
         sendToServer(out,9,data);

@@ -20,11 +20,12 @@ public class ClientApplicationThread extends Thread {
             listenToServer(in);
         }
     }
-    private void listenToServer(BufferedReader in) {
+    private synchronized void listenToServer(BufferedReader in) {
         String resp; //reads the server response
         try {
             resp = in.readLine();
             setData(resp);
+            System.out.println(resp);
         } catch (IOException e) {
             e.printStackTrace();
         }

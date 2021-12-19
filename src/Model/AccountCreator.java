@@ -1,35 +1,65 @@
 package Model;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class AccountCreator {
 
-    public static void CreateAccount() throws NoSuchAlgorithmException, IOException {
+    private String login;
+    private String password;
+
+    public AccountCreator(){
+        this.login = null;
+        this.password = null;
+    }
+    public AccountCreator(String login, String password){
+        this.login = login;
+        this.password = password;
+    }
+
+    public boolean checkLogin() throws IOException, NoSuchAlgorithmException {
+        Boolean test = false;
+
         BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
-        FileWriter fileWriter = new FileWriter("database.txt",true);
 
-        String login = login();
         String DBLine = reader.readLine();
-
         while( DBLine != null){
             String[] arrayOfData = DBLine.split(":");
             if (login.equals(arrayOfData[0])){
-                System.out.println("This login is already taken");
-                login = login();
-                reader.close();
-                reader = new BufferedReader(new FileReader("database.txt"));
+                test = true;
             }
             DBLine = reader.readLine();
         }
-        fileWriter.write(login + ":");
+        reader.close();
+        return test;
+    }
 
-        String password = password();
+    public void setLogin(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your UserName : ");
+        this.login = scanner.nextLine();
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setPassword(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your Password : ");
+        this.password = scanner.nextLine();
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void saveLoginPassword() throws IOException, NoSuchAlgorithmException {
+        FileWriter fileWriter = new FileWriter("database.txt", true);
+        fileWriter.write("\n");
+        fileWriter.write(login + ":");
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         messageDigest.update(password.getBytes());
@@ -38,19 +68,9 @@ public class AccountCreator {
         for (byte b : digest) {
             hexString.append(Integer.toHexString(0xFF & b));
         }
+
         fileWriter.write(hexString.toString());
         fileWriter.write("\n");
         fileWriter.close();
-    }
-
-    public static String login(){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your UserName : ");
-        return scanner.nextLine();
-    }
-    public static String password(){
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your Password : ");
-        return scanner.nextLine();
     }
 }

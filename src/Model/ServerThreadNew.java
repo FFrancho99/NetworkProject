@@ -54,6 +54,7 @@ public class ServerThreadNew extends Thread{
                         System.out.println("login failed");
                         sendToClient(socketSender, "H:False");
                     }
+
                     break;
                 case "2"://to
                     // Recipient of the conversation
@@ -73,7 +74,7 @@ public class ServerThreadNew extends Thread{
                     System.out.println("send message");
                     break;
 
-                case "4": // Sign in
+                case "4": // Sign up
                     String DecryptedData2 = AES.decrypt(dataContent,String.valueOf(key)); // Decryption of thje datastring
                     String[] newS = DecryptedData2.split(":"); // Split into a list
                     sender = newS[0];

@@ -65,6 +65,12 @@ public class ClientApplication implements ClientObserver {
                                 waiting();
                             }
                             control = true;
+                            //nonce implementation - authentication
+
+                            //récupérer le nonce
+                            //encrypter le nonce using key
+                            //envoyer le encrypted nonce
+                            //if nonce not okay, print "authentication faile, please try again" + control = false;
                             System.out.println("You can now use commands");
                         }break;
                         case "signup": {

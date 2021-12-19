@@ -138,7 +138,7 @@ public class ClientApplication implements ClientObserver {
                         "--------------------------------------------------\n" +
                         "'help' ------------------------------------------- if you need help\n" +
                         "'to: + username of your recipient' --------------- to start a conversation with 'username'\n" +
-                        "solo --------------------------------------------- to start talking with an imaginary friend\n" +
+                        "solo --------------------------------------------- to have a good laugh\n" +
                         "send: + msg -------------------------------------- to send 'msg' to your recipient\n" +
                         "logout ------------------------------------------- to disconnect\n" +
                         "login -------------------------------------------- to login \n" +
@@ -165,7 +165,8 @@ public class ClientApplication implements ClientObserver {
                 }
                 break;
             case "solo":
-
+                sendToServer(out, 6, null);
+                break;
             case "send":
                 try{
                     String encryptedData = AES.encrypt(commandAndArgumentsArray[1],String.valueOf(clientKey)); // Encryption of the data to send
@@ -180,9 +181,6 @@ public class ClientApplication implements ClientObserver {
                 break;
             case "logout":
 
-                break;
-            case "imaginary friend":
-                sendToServer(out, 6, null);
                 break;
         }
     }

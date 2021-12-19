@@ -5,13 +5,9 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Random;
 
 public class ServerThreadNew extends Thread{
     private Socket socketSender;
@@ -61,7 +57,6 @@ public class ServerThreadNew extends Thread{
                     socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
                     clientList.put(recipient,new Socket[]{socketOfRecipient,socketSender});
-                    //sendToClient(socketSender, "D:you can now send a message");
                     break;
                 case "3"://send
                     FileWriter fileWriter = new FileWriter("CryptedConversations.txt",true);
@@ -114,11 +109,7 @@ public class ServerThreadNew extends Thread{
                     sendToClient(clientList.get(dataArray[1])[0],data);
                     break;
             }
-
-
             }
-
-
 
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -155,7 +146,7 @@ public class ServerThreadNew extends Thread{
                 joke = line;
         }
         scanner.close();
-        sendToClient(socket, joke);
+        sendToClient(clientList.get(sender)[0], "J:" + joke);
 
     }
 

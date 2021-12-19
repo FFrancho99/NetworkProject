@@ -17,20 +17,24 @@ public class ClientApplication implements ClientObserver {
     private BigInteger clientKey;
     private BigInteger m2;
     private PrintWriter out;
+    private int serverPortNumber;
+    private String serverHostName;
+    private InetAddress serverAddress;
 
     public ClientApplication(String hostName, int portNumber) {
+        this.serverPortNumber = portNumber;
+        this.serverHostName = hostName;
         functionClientApplication();
     }
     public ClientApplication(InetAddress serverAddress, int portNumber){
+        this.serverPortNumber = portNumber;
+        this.serverAddress = serverAddress;
         functionClientApplication();
     }
 
     public void functionClientApplication(){
         try{
-            int serverPortNumber = 666;
-            //InetAddress serverAddress = "localhost";
-            String serverAddress = "localhost";
-            Socket socket = new Socket(serverAddress, serverPortNumber);
+            Socket socket = new Socket(serverHostName, serverPortNumber);
             OutputStream output;
             try {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
@@ -196,7 +200,7 @@ public class ClientApplication implements ClientObserver {
     public ArrayList<BigInteger> definePG(){
         BigInteger p = new BigInteger("23984923039409503948728493059487");
         BigInteger g = new BigInteger("5");
-        ArrayList<BigInteger> PG = new ArrayList<BigInteger>(3);
+        ArrayList<BigInteger> PG = new ArrayList<>(3);
         PG.add(0, p);
         PG.add(1, g);
         return PG;
@@ -224,8 +228,7 @@ public class ClientApplication implements ClientObserver {
         this.maj = true;
     }
 
-    public BigInteger setClientKey(BigInteger p, BigInteger g, BigInteger m, String sender) throws IOException {
-
+    public BigInteger setClientKey(BigInteger p, BigInteger g, BigInteger m, String sender) {
         DiffieHellman Dh = new DiffieHellman(p,g);
         BigInteger s = secretNumber();
         this.m2 = Dh.determineMessage(s);

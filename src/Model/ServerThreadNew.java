@@ -38,7 +38,6 @@ public class ServerThreadNew extends Thread{
 
             switch (header){
                 case "1": //login
-                    System.out.println("Encrypted login received " + dataContent);
                     String DecryptedData = AES.decrypt(dataContent,String.valueOf(key)); // Decrypt the received datastring
                     String[] DecryptedDataArry = DecryptedData.split(":"); // Split the data into a list
                     sender = DecryptedDataArry[0]; // First element of the data is the login
@@ -64,6 +63,10 @@ public class ServerThreadNew extends Thread{
                     socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
                     clientList.put(recipient,new Socket[]{socketOfRecipient,socketSender});
+
+                    // Clear the database
+                    FileWriter cleanWriter = new FileWriter("CryptedConversations.txt");
+                    cleanWriter.close();
                     break;
                 case "3"://send
                     FileWriter fileWriter = new FileWriter("CryptedConversations.txt",true);

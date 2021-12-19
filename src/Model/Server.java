@@ -34,7 +34,7 @@ public class Server {
                     "Host="+ serverSocket.getInetAddress().getHostAddress()+
                     "   Port=" + serverSocket.getLocalPort() );
         }catch (IOException e) {
-            System.out.println("Server couldn't start: unable to request port "+ serverSocket.getLocalPort());
+            System.out.println("Server couldn't start: unable to request port ");
         }
         try {
             while(true){

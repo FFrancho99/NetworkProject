@@ -21,6 +21,7 @@ public class ClientApplication implements ClientObserver {
     private String serverHostName;
     private InetAddress serverAddress;
     private Boolean newClient = false;
+    private Boolean stay = true;
 
     public ClientApplication(String hostName, int portNumber) {
         this.serverPortNumber = portNumber;
@@ -126,7 +127,7 @@ public class ClientApplication implements ClientObserver {
                 }
                 System.out.println("You can now use commands\n" +
                         "type 'help' if you need help");
-                while (true) {
+                while (stay) {
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written
                         readCommand(out, commandAndArgumentsArray);
@@ -207,9 +208,11 @@ public class ClientApplication implements ClientObserver {
                             "send: my message is no longer empty \n" +
                             "Type 'help' if you're still lost\n");
                 }
+                System.out.println("Message sent!");
                 break;
             case "logout":
-
+                System.out.println("Sorry to see you go :'(");
+                new ClientApplication(this.serverAddress, this.serverPortNumber);
                 break;
         }
     }

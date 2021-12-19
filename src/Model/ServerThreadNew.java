@@ -67,7 +67,7 @@ public class ServerThreadNew extends Thread{
                 case "3"://send
                     FileWriter fileWriter = new FileWriter("CryptedConversations.txt",true);
 
-                    data = "E:" + dataContent;
+                    data = "E:" + dataContent + ":" + sender;
 
                     fileWriter.write(dataContent);
                     fileWriter.write("\n");

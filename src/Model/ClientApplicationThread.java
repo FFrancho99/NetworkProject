@@ -56,7 +56,7 @@ public class ClientApplicationThread extends Thread {
         }
         else if(header.equals("E")){
             String message = AES.decrypt(dataContent[1],String.valueOf(key));
-            System.out.println(message);
+            System.out.println("from " + dataContent[2] + " : " + message);
         }else if(header.equals("J")){
             System.out.println(dataContent[1]);
         }

@@ -20,18 +20,22 @@ public class ClientApplicationThread extends Thread {
             listenToServer(in);
         }
     }
-    private synchronized void listenToServer(BufferedReader in) {
+    private void listenToServer(BufferedReader in) {
         String resp; //reads the server response
         try {
             resp = in.readLine();
             setData(resp);
-            System.out.println(resp);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public void setData(String data){
-        this.data = data;
+        String header = String.valueOf(data.charAt(0));
+        String dataContent = data.split(":")[1];
+        if(header.equals("D")){
+            System.out.println(dataContent);
+        }
+        this.data = dataContent;
         clientApplication.update(this.data);
     }
 }

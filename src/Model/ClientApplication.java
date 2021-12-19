@@ -52,7 +52,6 @@ public class ClientApplication implements ClientObserver {
                         String Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt the datastring thanks to the key
                         sendToServer(out, 1, Crypteddata); // Send the encrypted data to the server
                         waiting();
-                        System.out.println("out of boucle");
                         while(mess.equals("False")){ // If login password is false ask agait
                             this.maj = false;
                             System.out.println("Wrong login or password");
@@ -63,7 +62,7 @@ public class ClientApplication implements ClientObserver {
                             sendToServer(out, 1, Crypteddata); // Send crypted data to the server
                             while(!maj){} // Wait for the answer
                         }
-                        System.out.println("You are succefully logged in");
+                        System.out.println("You can now use commands");
                     }break;
                     case "signup": {
                         AccountCreator aC = new AccountCreator(); // Create an AccountCreator object

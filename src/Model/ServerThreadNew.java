@@ -48,25 +48,26 @@ public class ServerThreadNew extends Thread{
                     ClientLogin clientLogin = new ClientLogin(DecryptedSender[0], DecryptedSender[1]); // Create a new ClientLogin object with login password received
                     if(clientLogin.checkLogin()){ // Verification of the login password
                         clientList.put(DecryptedSender[0], new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
-                        sendToClient(socketSender, "Login successful"); // Correct login password
+                        sendToClient(socketSender, "D:Login successful"); // Correct login password
                     }
                     else{ // Incorect login password
                         System.out.println("login failed");
-                        sendToClient(socketSender, "False");
+                        sendToClient(socketSender, "H:False");
                     }
                     break;
                 case "2"://to
-                    System.out.println("name of the recipient: " + dataContent);
+                    // Recipient of the conversation
                     String decryptedData = AES.decrypt(dataContent,String.valueOf(key));
                     recipient = decryptedData;
                     Socket[] socketRecipient = clientList.get(recipient);
                     socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
-                    sendToClient(socketSender, "you can now send a message");
+                    sendToClient(socketSender, "D:you can now send a message");
                     break;
                 case "3"://send
                     String decryptedMessage = AES.decrypt(dataContent,String.valueOf(key));
-                    sendToClient(socketOfRecipient, decryptedMessage);
+                    data = "D:" + decryptedMessage;
+                    sendToClient(socketOfRecipient, data);
                     System.out.println("send message");
                     break;
 
@@ -77,11 +78,11 @@ public class ServerThreadNew extends Thread{
                     AccountCreator aC = new AccountCreator(newS[0],newS[1]); // Account creator instanciation with the received data
                     if(aC.checkLogin()){ // Check if login already exist
                         System.out.println("This login is already taken choose another"); // login already exist
-                        sendToClient(socketSender,"False");
+                        sendToClient(socketSender,"H:False");
                     }else{ // Login is unique
                         System.out.println("Registering succefful");
                         aC.saveLoginPassword(); // Save the login password in the database
-                        sendToClient(socketSender,"Login Password saved");
+                        sendToClient(socketSender,"D:Login Password saved");
                     }
                     break;
                 case "5": // Quit
@@ -94,7 +95,8 @@ public class ServerThreadNew extends Thread{
                     sender = dataContent;
                     String[] PG = dataContent.split(":");
                     DiffieHellman dh = new DiffieHellman(new BigInteger(PG[0]),new BigInteger(PG[1]));
-                    sendToClient(socketSender, String.valueOf(dh.determineMessage(s)));
+                    data = "H:" + dh.determineMessage(s); // H header is to hide the information to the user
+                    sendToClient(socketSender, data);
                     key = dh.determineKey(new BigInteger(PG[2]),s);
                     break;
             }

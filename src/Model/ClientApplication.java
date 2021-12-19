@@ -125,6 +125,9 @@ public class ClientApplication implements ClientObserver {
             case "logout":
 
                 break;
+            case "imaginary friend":
+                sendToServer(out, 4, null);
+                break;
         }
     }
 

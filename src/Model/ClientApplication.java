@@ -43,34 +43,42 @@ public class ClientApplication implements ClientObserver {
                             String DHdata = dh.getP() + ":" + dh.getG() + ":" + dh.determineMessage(s); // Data array instanciation with P, G and the secret message value
                             sendToServer(out,8, DHdata); // Data sharing with the host in clear
                             waiting();
-
                             serverKey = dh.determineKey(new BigInteger(mess),s); // Key determination with the server message and personnal secret number
-
-                            // Login password verification
+                            // Login verification
                             ClientLogin cl = new ClientLogin(); // Client Login object instanciation
                             cl.setLogin(); // Ask the login to the user
-                            cl.setPassword(); // Ask the password to the user
-                            String data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
+                            String data = cl.getLogin(); // Set login password in a data array
                             String Crypteddata = AES.encrypt(data, String.valueOf(serverKey)); // Encrypt the datastring thanks to the key
                             sendToServer(out, 1, Crypteddata); // Send the encrypted data to the server
                             waiting();
-                            while(mess.equals("False")){ // If login password is false ask agait
-                                this.maj = false;
-                                System.out.println("Wrong login or password");
-                                cl.setLogin(); // Ask again for login
-                                cl.setPassword(); // Ask again for password
-                                data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
-                                Crypteddata = AES.encrypt(data, String.valueOf(serverKey)); // Encrypt datastring thanks to the key
-                                sendToServer(out, 1, Crypteddata); // Send crypted data to the server
-                                waiting();
-                            }
                             control = true;
-                            //nonce implementation - authentication
-
-                            //récupérer le nonce
-                            //encrypter le nonce using key
+                            if(mess.equals("False")){ // If login doesn't exist
+                                System.out.println("This login doesn't exist, please create an account");
+                                control = false;
+                            }
+                            waiting();
+                            String nonce = mess;
+                            String cryptedNonce = AES.encrypt(nonce, String.valueOf(serverKey));//encrypter le nonce using key
+                            sendToServer(out, 10, cryptedNonce);
+                            waiting();
+                            if(mess.equals("true")){
+                                cl.setPassword();
+                                data = cl.getLogin() + ":" + cl.getPassword();
+                                String cryptedData = AES.encrypt(data, String.valueOf(serverKey));
+                                sendToServer(out, 11, cryptedData);
+                                waiting();
+                                while(mess.equals("False")){
+                                    System.out.println("Wrong password");
+                                    cl.setPassword();
+                                    data = cl.getLogin() + ":" + cl.getPassword();
+                                    cryptedData = AES.encrypt(data, String.valueOf(serverKey));
+                                    sendToServer(out, 11, cryptedData);
+                                    waiting();
+                                }
+                            }
                             //envoyer le encrypted nonce
                             //if nonce not okay, print "authentication faile, please try again" + control = false;
+                            cl.setPassword(); // Ask the password to the user
                             System.out.println("You can now use commands");
                         }break;
                         case "signup": {

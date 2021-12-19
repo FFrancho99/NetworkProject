@@ -5,13 +5,9 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Random;
 
 public class ServerThreadNew extends Thread{
     private Socket socketSender;
@@ -20,6 +16,7 @@ public class ServerThreadNew extends Thread{
     private String sender;
     private String recipient;
     private Socket socketOfRecipient;
+    private int nonce;
 
     public ServerThreadNew(Socket socket, HashMap<String,Socket[]> clientList){
         this.socketSender = socket;
@@ -43,13 +40,15 @@ public class ServerThreadNew extends Thread{
                     String DecryptedData = AES.decrypt(dataContent,String.valueOf(key)); // Decrypt the received datastring
                     String[] DecryptedDataArry = DecryptedData.split(":"); // Split the data into a list
                     sender = DecryptedDataArry[0]; // First element of the data is the login
-                    ClientLogin clientLogin = new ClientLogin(DecryptedDataArry[0], DecryptedDataArry[1]); // Create a new ClientLogin object with login password received
+                    ClientLogin clientLogin = new ClientLogin(DecryptedDataArry[0]); // Create a new ClientLogin object with login password received
                     if(clientLogin.checkLogin()){ // Verification of the login password
                         clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
-                        sendToClient(clientList.get(sender)[0], "D:Login successful"); // Correct login password
+                        Random rand = new Random();
+                        nonce = rand.nextInt(1000000);
+                        data = "N:" + nonce;
+                        sendToClient(socketSender, data); // Correct login
                     }
-                    else{ // Incorect login password
-                        System.out.println("login failed");
+                    else{ // Incorect login
                         sendToClient(socketSender, "H:False");
                     }
 
@@ -107,6 +106,21 @@ public class ServerThreadNew extends Thread{
                     data = "DH2:" + dataArray[0];
                     sendToClient(clientList.get(dataArray[1])[0],data);
                     break;
+                case "10": //nonce reception
+                    String decryptedNonce = AES.decrypt(dataContent, String.valueOf(key));
+                    if(decryptedNonce.equals(String.valueOf(nonce))){
+                        sendToClient(clientList.get(sender)[0], "H:true");
+                    }
+                case "11":
+                    String decryptedData3 = AES.decrypt(dataContent, String.valueOf(key));
+                    String[] arrayOfDecryptedData3 = decryptedData3.split(":");
+                    ClientLogin cl = new ClientLogin(arrayOfDecryptedData3[0], arrayOfDecryptedData3[1]);
+                    if(cl.checkPassword()){ // Verification of the login password
+                        sendToClient(clientList.get(sender)[0], "D:login successful"); // Correct password
+                    }
+                    else{
+                        sendToClient(clientList.get(sender)[0], "False");
+                    }
             }
 
 

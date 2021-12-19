@@ -86,6 +86,9 @@ public class ServerThreadNew extends Thread{
                     break;
                 case "5": // Quit
                     break;
+                case "6": // Imaginary friend communication
+                    soloMode(socketSender);
+                    break;
                 case "8": // Diffie Hellman key sharing communication
                     BigInteger s = secretNumber();
                     sender = dataContent;

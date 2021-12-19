@@ -167,7 +167,7 @@ public class ClientApplication implements ClientObserver {
 
                 break;
             case "imaginary friend":
-                sendToServer(out, 4, null);
+                sendToServer(out, 6, null);
                 break;
         }
     }

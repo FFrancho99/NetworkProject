@@ -162,7 +162,7 @@ public class ServerThreadNew extends Thread{
     }
 
     private void soloMode(Socket socket) throws IOException {
-        File listOfJokes = new File("src/Model/jokeDatabase");
+        File listOfJokes = new File("ADD YOUR PATH TO JOKEDATABASE HERE");
         String joke = null;
         Random rand = new Random();
         int n = 0;

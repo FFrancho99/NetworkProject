@@ -28,7 +28,7 @@ public class ClientLogin {
 
     public boolean checkLogin() throws IOException, NoSuchAlgorithmException {
         Boolean test = false;
-        BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader("ADD YOUR PATH TO DATABASE HERE"));
         String DBLine = reader.readLine();
         while( DBLine != null){
             String[] arrayOfData = DBLine.split(":");
@@ -42,7 +42,7 @@ public class ClientLogin {
     }
 
     public boolean checkPassword() throws NoSuchAlgorithmException, IOException{
-        BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
+        BufferedReader reader = new BufferedReader(new FileReader("ADD YOUR PATH TO DATABASE HERE"));
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         messageDigest.update(password.getBytes());

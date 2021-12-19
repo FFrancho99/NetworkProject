@@ -2,6 +2,7 @@ package Model;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.math.BigInteger;
 
 public class ClientApplicationThread extends Thread {
 
@@ -30,12 +31,22 @@ public class ClientApplicationThread extends Thread {
     }
     public void setData(String data){
         String header = String.valueOf(data.charAt(0));
-        String dataContent = data.split(":")[1];
+        String[] dataContent = data.split(":");
         if(header.equals("D")){
-            System.out.println(dataContent);
+            System.out.println(dataContent[1]);
+            this.data = dataContent[1];
+            clientApplication.update(this.data);
+        }else if(header.equals("DH")){
+            clientApplication.setClientKey(new BigInteger(dataContent[1]),new BigInteger(dataContent[2]),new BigInteger(dataContent[3]));
+        }else if(header.equals("DH2")){
+            System.out.println("DH2 received");
+            this.data = dataContent[1];
+            clientApplication.update(this.data);
         }
-        this.data = dataContent;
-        clientApplication.update(this.data);
+        else{
+            this.data = dataContent[1];
+            clientApplication.update(this.data);
+        }
     }
 }
 

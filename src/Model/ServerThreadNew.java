@@ -43,12 +43,12 @@ public class ServerThreadNew extends Thread{
                     System.out.println(dataContent);
                     String DecryptedData = AES.decrypt(dataContent,String.valueOf(key)); // Decrypt the received datastring
                     System.out.println(DecryptedData);
-                    String[] DecryptedSender = DecryptedData.split(":"); // Split the data into a list
-                    sender = DecryptedSender[0];
-                    ClientLogin clientLogin = new ClientLogin(DecryptedSender[0], DecryptedSender[1]); // Create a new ClientLogin object with login password received
+                    String[] DecryptedDataArry = DecryptedData.split(":"); // Split the data into a list
+                    sender = DecryptedDataArry[0]; // First element of the data is the login
+                    ClientLogin clientLogin = new ClientLogin(DecryptedDataArry[0], DecryptedDataArry[1]); // Create a new ClientLogin object with login password received
                     if(clientLogin.checkLogin()){ // Verification of the login password
-                        clientList.put(DecryptedSender[0], new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
-                        sendToClient(socketSender, "D:Login successful"); // Correct login password
+                        clientList.put(sender, new Socket[]{socketSender, null});   //adds the userName and the corresponding socket to the clientList
+                        sendToClient(clientList.get(sender)[0], "D:Login successful"); // Correct login password
                     }
                     else{ // Incorect login password
                         System.out.println("login failed");
@@ -62,7 +62,8 @@ public class ServerThreadNew extends Thread{
                     Socket[] socketRecipient = clientList.get(recipient);
                     socketOfRecipient = socketRecipient[0];
                     clientList.put(sender, new Socket[]{socketSender, socketOfRecipient});
-                    sendToClient(socketSender, "D:you can now send a message");
+                    clientList.put(recipient,new Socket[]{socketOfRecipient,socketSender});
+                    //sendToClient(socketSender, "D:you can now send a message");
                     break;
                 case "3"://send
                     String decryptedMessage = AES.decrypt(dataContent,String.valueOf(key));
@@ -90,7 +91,11 @@ public class ServerThreadNew extends Thread{
                 case "6": // Imaginary friend communication
                     soloMode(socketSender);
                     break;
-                case "8": // Diffie Hellman key sharing communication
+                case "7": // Diffie Hellman key sharing Client-Client
+                    data = "DH:" + dataContent;
+                    sendToClient(socketOfRecipient, data);
+                    break;
+                case "8": // Diffie Hellman key sharing communication server-client
                     BigInteger s = secretNumber();
                     sender = dataContent;
                     String[] PG = dataContent.split(":");
@@ -98,6 +103,12 @@ public class ServerThreadNew extends Thread{
                     data = "H:" + dh.determineMessage(s); // H header is to hide the information to the user
                     sendToClient(socketSender, data);
                     key = dh.determineKey(new BigInteger(PG[2]),s);
+                    break;
+                case "9":
+
+                    System.out.println("data received");
+                    data = "DH2:" + dataContent;
+                    sendToClient(socketOfRecipient,data);
                     break;
             }
 

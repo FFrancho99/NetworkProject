@@ -33,64 +33,71 @@ public class ClientApplication implements ClientObserver {
                 // loop
                 System.out.println("Do you want to login or signup?");
                 Scanner scanner = new Scanner(System.in);
-                switch (scanner.nextLine()){ // Choice of login or Account creation
-                    case "login": {
-                        // Diffie Hellman key sharing to encrypt communications
-                        DiffieHellman dh = new DiffieHellman(definePG()); // DiffieHellman class instanciation
-                        BigInteger s = secretNumber(); // Secret number based on P and G determination
-                        String DHdata = dh.getP() + ":" + dh.getG() + ":" + dh.determineMessage(s); // Data array instanciation with P, G and the secret message value
-                        sendToServer(out,8, DHdata); // Data sharing with the host in clear
-                        waiting();
-                        this.maj = false;
-                        key = dh.determineKey(new BigInteger(mess),s); // Key determination with the server message and personnal secret number
+                boolean control = false;
+                while (!control){
+                    switch (scanner.nextLine()){ // Choice of login or Account creation
+                        case "login": {
+                            // Diffie Hellman key sharing to encrypt communications
+                            DiffieHellman dh = new DiffieHellman(definePG()); // DiffieHellman class instanciation
+                            BigInteger s = secretNumber(); // Secret number based on P and G determination
+                            String DHdata = dh.getP() + ":" + dh.getG() + ":" + dh.determineMessage(s); // Data array instanciation with P, G and the secret message value
+                            sendToServer(out,8, DHdata); // Data sharing with the host in clear
+                            waiting();
+                            this.maj = false;
+                            key = dh.determineKey(new BigInteger(mess),s); // Key determination with the server message and personnal secret number
 
-                        // Login password verification
-                        ClientLogin cl = new ClientLogin(); // Client Login object instanciation
-                        cl.setLogin(); // Ask the login to the user
-                        cl.setPassword(); // Ask the password to the user
-                        String data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
-                        String Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt the datastring thanks to the key
-                        sendToServer(out, 1, Crypteddata); // Send the encrypted data to the server
-                        waiting();
-                        while(mess.equals("False")){ // If login password is false ask agait
-                            this.maj = false;
-                            System.out.println("Wrong login or password");
-                            cl.setLogin(); // Ask again for login
-                            cl.setPassword(); // Ask again for password
-                            data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
-                            Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt datastring thanks to the key
-                            sendToServer(out, 1, Crypteddata); // Send crypted data to the server
-                            while(!maj){} // Wait for the answer
+                            // Login password verification
+                            ClientLogin cl = new ClientLogin(); // Client Login object instanciation
+                            cl.setLogin(); // Ask the login to the user
+                            cl.setPassword(); // Ask the password to the user
+                            String data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
+                            String Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt the datastring thanks to the key
+                            sendToServer(out, 1, Crypteddata); // Send the encrypted data to the server
+                            waiting();
+                            while(mess.equals("False")){ // If login password is false ask agait
+                                this.maj = false;
+                                System.out.println("Wrong login or password");
+                                cl.setLogin(); // Ask again for login
+                                cl.setPassword(); // Ask again for password
+                                data = cl.getLogin() + ":" + cl.getPassword(); // Set login password in a data array
+                                Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt datastring thanks to the key
+                                sendToServer(out, 1, Crypteddata); // Send crypted data to the server
+                                waiting();
+                            }
+                            control = true;
+                            System.out.println("You can now use commands");
+                        }break;
+                        case "signup": {
+                            AccountCreator aC = new AccountCreator(); // Create an AccountCreator object
+                            aC.setLogin(); // Ask for a new login
+                            aC.setPassword(); // Ask for a new password
+                            String data = aC.getLogin() + ":" + aC.getPassword(); // Set the informations in a datastring
+                            String Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt the datastring
+                            sendToServer(out,4,Crypteddata); // Send the crypted data to the server
+                            waiting();
+                            while (mess.equals("False")){ // If login already exist
+                                this.maj = false;
+                                System.out.println("This login is already used please chose another");
+                                aC.setLogin(); // Ask again for login
+                                aC.setPassword(); // Ask again for password
+                                data = aC.getLogin() + ":" + aC.getPassword(); // Set the informations in a datastring
+                                Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt the datastring
+                                sendToServer(out,4,Crypteddata);  // Send the crypted data to the server
+                                waiting();
+                            }
+                            // Login using the new login password
+                            ClientLogin cl = new ClientLogin(aC.getLogin(), aC.getPassword());
+                            data = cl.getLogin() + ":" + cl.getPassword();
+                            Crypteddata = AES.encrypt(data, String.valueOf(key));
+                            sendToServer(out, 1, Crypteddata);
+                            control = true;
+                        }break;
+                        default:{
+                            System.out.println("You are not logged in yet, please login or signup");
                         }
-                        System.out.println("You can now use commands");
-                    }break;
-                    case "signup": {
-                        AccountCreator aC = new AccountCreator(); // Create an AccountCreator object
-                        aC.setLogin(); // Ask for a new login
-                        aC.setPassword(); // Ask for a new password
-                        String data = aC.getLogin() + ":" + aC.getPassword(); // Set the informations in a datastring
-                        String Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt the datastring
-                        sendToServer(out,4,Crypteddata); // Send the crypted data to the server
-                        while(!maj){
-                            System.out.println("boucle2");
-                        } // Wait for the answer
-                        while (mess.equals("False")){ // If login already exist
-                            this.maj = false;
-                            System.out.println("This login is already used please chose another");
-                            aC.setLogin(); // Ask again for login
-                            aC.setPassword(); // Ask again for password
-                            data = aC.getLogin() + ":" + aC.getPassword(); // Set the informations in a datastring
-                            Crypteddata = AES.encrypt(data, String.valueOf(key)); // Encrypt the datastring
-                            sendToServer(out,4,Crypteddata);  // Send the crypted data to the server
-                            while (!maj){} // Wait for the answer
-                        }
-                        // Login using the new login password
-                        ClientLogin cl = new ClientLogin(aC.getLogin(), aC.getPassword());
-                        data = cl.getLogin() + ":" + cl.getPassword();
-                        Crypteddata = AES.encrypt(data, String.valueOf(key));
-                        sendToServer(out, 1, Crypteddata);
-                    }break;
+                    }
                 }
+
                 while (true) {
                     String[] commandAndArgumentsArray = readConsole(out);
                     if (commandAndArgumentsArray.length != 0) { //check if stg has been written

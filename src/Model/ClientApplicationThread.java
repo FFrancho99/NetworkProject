@@ -15,7 +15,6 @@ public class ClientApplicationThread extends Thread {
     }
     @Override
     public void run() {
-        System.out.println("in run");
         while(true){
             listenToServer(in);
         }

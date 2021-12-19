@@ -143,10 +143,8 @@ public class ClientApplication implements ClientObserver {
         switch (command){
             case "help":
                 System.out.println("Got confused with the chat app? Bob is here to help you.\n" +
-                        "if you need help, type 'help'" +
-                        "if you want to do something, type the command followed by ':' " +
-                        "followed by the command arguments if there are any" +
-                        "--------------------------------------------------\n" +
+                        "If you want to use the app, type one of the following command,\n" +
+                        "followed by ':', followed by the command arguments if there are any\n" +
                         "--------------COMMAND: + arguments----------------\n" +
                         "--------------------------------------------------\n" +
                         "'help' ------------------------------------------- if you need help\n" +

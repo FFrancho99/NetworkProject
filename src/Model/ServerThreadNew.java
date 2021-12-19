@@ -30,13 +30,15 @@ public class ServerThreadNew extends Thread{
             BufferedReader reader = new BufferedReader(new InputStreamReader(input)); //wrap the InputStream in a BufferedReader to read data as String
             while(true){
                 String data = reader.readLine(); //reads the userName sent by the client
-                String header = String.valueOf(data.charAt(0));
-                String dataContent = data.substring(1);
+                String[] dataC = data.split("-");
+                String dataContent = dataC[1];
+                String header = dataC[0];
 
 
 
             switch (header){
                 case "1": //login
+                    System.out.println("Encrypted login received " + dataContent);
                     String DecryptedData = AES.decrypt(dataContent,String.valueOf(key)); // Decrypt the received datastring
                     String[] DecryptedDataArry = DecryptedData.split(":"); // Split the data into a list
                     sender = DecryptedDataArry[0]; // First element of the data is the login
@@ -107,10 +109,13 @@ public class ServerThreadNew extends Thread{
                     sendToClient(clientList.get(dataArray[1])[0],data);
                     break;
                 case "10": //nonce reception
-                    String decryptedNonce = AES.decrypt(dataContent, String.valueOf(key));
+                    String receivedNonce = dataContent;
+                    String decryptedNonce = AES.decrypt(receivedNonce, String.valueOf(key));
                     if(decryptedNonce.equals(String.valueOf(nonce))){
                         sendToClient(clientList.get(sender)[0], "H:true");
-                    }
+                    }else {
+                        sendToClient(clientList.get(sender)[0], "H:false");
+                    }break;
                 case "11":
                     String decryptedData3 = AES.decrypt(dataContent, String.valueOf(key));
                     String[] arrayOfDecryptedData3 = decryptedData3.split(":");
@@ -120,7 +125,7 @@ public class ServerThreadNew extends Thread{
                     }
                     else{
                         sendToClient(clientList.get(sender)[0], "False");
-                    }
+                    }break;
             }
 
 

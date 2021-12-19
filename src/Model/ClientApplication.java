@@ -31,10 +31,10 @@ public class ClientApplication implements ClientObserver {
                 threadListen.start();
 
                 // loop
-                System.out.println("Do you want to login or signup?");
                 Scanner scanner = new Scanner(System.in);
                 boolean control = false;
                 while (!control){
+                    System.out.println("Do you want to login or signup?");
                     switch (scanner.nextLine()){ // Choice of login or Account creation
                         case "login": {
                             // Diffie Hellman key sharing to encrypt communications
@@ -55,8 +55,8 @@ public class ClientApplication implements ClientObserver {
                             if(mess.equals("False")){ // If login doesn't exist
                                 System.out.println("This login doesn't exist, please create an account");
                                 control = false;
+                                break;
                             }
-                            waiting();
                             String nonce = mess;
                             String cryptedNonce = AES.encrypt(nonce, String.valueOf(serverKey));//encrypter le nonce using key
                             sendToServer(out, 10, cryptedNonce);
@@ -78,7 +78,6 @@ public class ClientApplication implements ClientObserver {
                             }
                             //envoyer le encrypted nonce
                             //if nonce not okay, print "authentication faile, please try again" + control = false;
-                            cl.setPassword(); // Ask the password to the user
                             System.out.println("You can now use commands");
                         }break;
                         case "signup": {
@@ -129,7 +128,7 @@ public class ClientApplication implements ClientObserver {
     }
 
     public void sendToServer(PrintWriter out, int header, String message){
-        String messageToSend = header + message;
+        String messageToSend = header + "-" + message;
         out.println(messageToSend);
     }
 
@@ -219,7 +218,7 @@ public class ClientApplication implements ClientObserver {
         while(!maj){
             try { //Just for the sake of compiling - you may think of a better solution
                 System.out.println("waiting for server");
-                Thread.currentThread().sleep(1000);
+                Thread.currentThread().sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

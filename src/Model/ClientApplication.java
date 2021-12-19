@@ -2,6 +2,7 @@ package Model;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,13 +16,25 @@ public class ClientApplication implements ClientObserver {
     private BigInteger serverKey;
     private BigInteger clientKey;
     private BigInteger m2;
-    private Socket socket;
     private PrintWriter out;
+    private int serverPortNumber;
+    private String serverHostName;
+    private InetAddress serverAddress;
 
-    public ClientApplication() {
+    public ClientApplication(String hostName, int portNumber) {
+        this.serverPortNumber = portNumber;
+        this.serverHostName = hostName;
+        functionClientApplication();
+    }
+    public ClientApplication(InetAddress serverAddress, int portNumber){
+        this.serverPortNumber = portNumber;
+        this.serverAddress = serverAddress;
+        functionClientApplication();
+    }
+
+    public void functionClientApplication(){
         try{
-            int portNumber = 666;
-            Socket socket = new Socket("localhost", portNumber);
+            Socket socket = new Socket(serverHostName, serverPortNumber);
             OutputStream output;
             try {
                 output = socket.getOutputStream(); //to send the data to the client (low level, bytes)
@@ -122,9 +135,8 @@ public class ClientApplication implements ClientObserver {
                 e.printStackTrace();
             }
         } catch (IOException e) {
-        System.out.println(Arrays.toString(e.getStackTrace()));
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
-
     }
 
     public void sendToServer(PrintWriter out, int header, String message){
@@ -199,7 +211,7 @@ public class ClientApplication implements ClientObserver {
     public ArrayList<BigInteger> definePG(){
         BigInteger p = new BigInteger("23984923039409503948728493059487");
         BigInteger g = new BigInteger("5");
-        ArrayList<BigInteger> PG = new ArrayList<BigInteger>(3);
+        ArrayList<BigInteger> PG = new ArrayList<>(3);
         PG.add(0, p);
         PG.add(1, g);
         return PG;
@@ -227,8 +239,7 @@ public class ClientApplication implements ClientObserver {
         this.maj = true;
     }
 
-    public BigInteger setClientKey(BigInteger p, BigInteger g, BigInteger m, String sender) throws IOException {
-
+    public BigInteger setClientKey(BigInteger p, BigInteger g, BigInteger m, String sender) {
         DiffieHellman Dh = new DiffieHellman(p,g);
         BigInteger s = secretNumber();
         this.m2 = Dh.determineMessage(s);

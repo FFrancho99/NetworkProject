@@ -1,30 +1,45 @@
 package Model;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Server {
-    private static ServerSocket serverSocket;
+    private static ServerSocket serverSocket; // static bc only one server
+
     public static void main(String[] args) {
-        int portNumber = 666;
+        int serverPortNumber = 666;
         serverSocket = null;
         ArrayList<ServerThreadNew>  threadArrayList = new ArrayList<>();
         HashMap<String, Socket[]> clientList = new HashMap<>(); //HashMap contains the userNames (key) with the corresponding socket (value)
+
+
         try {
-            serverSocket = new ServerSocket(portNumber); //creates the socket of the server
-            System.out.println("Model.Server started");
+            if (args.length ==0){ // if IP address is NOT provided when starting the server
+                serverSocket = new ServerSocket(serverPortNumber); //creates the socket of the server
+                                                        // IP address is localhost as it is not precised
+            }
+            else {
+                int serverBacklog = 0; // 0 for default value
+                InetAddress serverAddress = InetAddress.getByName(args[0]);
+                serverSocket = new ServerSocket(serverPortNumber, serverBacklog, serverAddress); //creates the socket of the server
+            }
+
+            System.out.println("Server started:" +
+                    "Host="+ serverSocket.getInetAddress().getHostAddress()+
+                    "   Port=" + serverSocket.getLocalPort() );
         }catch (IOException e) {
-            System.out.println("Unable to request port");
+            System.out.println("Server couldn't start: unable to request port "+ serverSocket.getLocalPort());
         }
         try {
             while(true){
                 System.out.println("Waiting for a new client");
-                Socket socket = serverSocket.accept(); //creates a socket for each new client accepted
-                System.out.println("Model.Client accepted");
-                ServerThreadNew serverThread = new ServerThreadNew(socket, clientList); //creates the thread for the new client
+                Socket clientSocket = serverSocket.accept(); //creates a socket for each new client accepted
+                System.out.println("New Client connection: from "+ clientSocket.getInetAddress().getHostAddress());
+                ServerThreadNew serverThread = new ServerThreadNew(clientSocket, clientList); //creates the thread for the new client
                 serverThread.start();
                 threadArrayList.add(serverThread);
             }

@@ -208,7 +208,7 @@ public class ClientApplication implements ClientObserver {
                             "send: my message is no longer empty \n" +
                             "Type 'help' if you're still lost\n");
                 }
-                System.out.println("Message sent!");
+            System.out.println("Message sent!");
                 break;
             case "logout":
                 System.out.println("Sorry to see you go :'(");

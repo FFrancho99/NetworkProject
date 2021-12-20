@@ -22,7 +22,7 @@ public class AccountCreator {
     public boolean checkLogin() throws IOException, NoSuchAlgorithmException {
         Boolean test = false;
 
-        BufferedReader reader = new BufferedReader(new FileReader("ADD YOUR PATH TO DATABASE HERE"));
+        BufferedReader reader = new BufferedReader(new FileReader("database.txt"));
 
         String DBLine = reader.readLine();
         while( DBLine != null){
@@ -57,7 +57,7 @@ public class AccountCreator {
     }
 
     public void saveLoginPassword() throws IOException, NoSuchAlgorithmException {
-        FileWriter fileWriter = new FileWriter("ADD YOUR PATH TO DATABASE HERE", true);
+        FileWriter fileWriter = new FileWriter("database.txt", true);
         fileWriter.write("\n");
         fileWriter.write(login + ":");
 
